@@ -1,0 +1,763 @@
+<title>Sajag Compliance Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --ground:#EFF1EF; --surface:#FAFBFA; --surface-2:#E7EAE7; --surface-3:#DDE2DE;
+  --ink:#161A18; --ink-2:#3A423D; --muted:#5E665F; --faint:#8C948D;
+  --line:#D2D8D3; --line-strong:#B6BFB8;
+  /* status — reserved, never reused as a series colour */
+  --ok:#00693A; --ok-bg:#E0EFE7;
+  --warn:#9A6202; --warn-bg:#F7EEDC;
+  --crit:#B00D26; --crit-bg:#F8E7E9;
+  --info:#00539B; --info-bg:#E1EBF5;
+  /* the single magnitude hue for bars */
+  --bar:#3C6E8F; --bar-soft:#C9D8E2;
+  --stripe-a:#161A18; --stripe-b:#E8B21B;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --gutter:clamp(14px,3.5vw,34px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0E1211; --surface:#151A18; --surface-2:#1D2422; --surface-3:#252D2A;
+  --ink:#E5EAE7; --ink-2:#C2CAC6; --muted:#98A29C; --faint:#6E7873;
+  --line:#28312D; --line-strong:#3A443F;
+  --ok:#4DBE82; --ok-bg:#0F2418;
+  --warn:#E9A825; --warn-bg:#2A2011;
+  --crit:#FF6B80; --crit-bg:#2A1418;
+  --info:#6FB1EE; --info-bg:#0F1E2C;
+  --bar:#79AECC; --bar-soft:#26353E;
+  --stripe-a:#0E1211; --stripe-b:#C9971A;
+}}
+:root[data-theme="dark"]{
+  --ground:#0E1211; --surface:#151A18; --surface-2:#1D2422; --surface-3:#252D2A;
+  --ink:#E5EAE7; --ink-2:#C2CAC6; --muted:#98A29C; --faint:#6E7873;
+  --line:#28312D; --line-strong:#3A443F;
+  --ok:#4DBE82; --ok-bg:#0F2418; --warn:#E9A825; --warn-bg:#2A2011;
+  --crit:#FF6B80; --crit-bg:#2A1418; --info:#6FB1EE; --info-bg:#0F1E2C;
+  --bar:#79AECC; --bar-soft:#26353E; --stripe-a:#0E1211; --stripe-b:#C9971A;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);margin:0;
+  font-family:var(--display);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:var(--gutter)}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.018em;line-height:1.15;text-wrap:balance}
+h1{font-size:clamp(20px,3vw,27px);font-weight:700;letter-spacing:-.03em}
+h2{font-size:clamp(16px,2vw,19px)}
+h3{font-size:14.5px}
+p{margin:0;max-width:70ch}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--info);outline-offset:2px;border-radius:3px}
+.hazard{height:7px;background:repeating-linear-gradient(-45deg,var(--stripe-a) 0 9px,var(--stripe-b) 9px 18px)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--muted)}
+
+/* ---- masthead + KPI strip ---- */
+header{padding-block:22px 16px;display:flex;flex-wrap:wrap;gap:14px 24px;
+  align-items:flex-end;justify-content:space-between}
+header .meta{font-family:var(--mono);font-size:11px;color:var(--faint);text-align:right}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.kpi{background:var(--surface);padding:14px 16px;display:flex;flex-direction:column;gap:3px}
+.kpi .n{font-size:clamp(22px,3vw,28px);font-weight:700;letter-spacing:-.03em;
+  font-family:var(--mono);font-variant-numeric:tabular-nums;line-height:1.05}
+.kpi .l{font-size:12px;color:var(--muted);max-width:22ch}
+.kpi.is-crit .n{color:var(--crit)}
+.kpi.is-warn .n{color:var(--warn)}
+
+/* ---- tabs ---- */
+nav.tabs{display:flex;gap:2px;overflow-x:auto;margin-top:22px;
+  border-bottom:1px solid var(--line-strong);scrollbar-width:thin}
+nav.tabs button{background:none;border:0;padding:9px 14px;cursor:pointer;white-space:nowrap;
+  font-size:13.2px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;
+  margin-bottom:-1px;border-radius:3px 3px 0 0}
+nav.tabs button:hover{color:var(--ink);background:var(--surface-2)}
+nav.tabs button[aria-selected="true"]{color:var(--ink);font-weight:600;border-bottom-color:var(--ink)}
+section[role="tabpanel"]{padding-block:22px 42px}
+.panel-head{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:baseline;
+  justify-content:space-between;margin-bottom:14px}
+.panel-head p{font-size:13px;color:var(--muted)}
+
+/* ---- tables ---- */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:3px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:620px}
+th,td{text-align:left;padding:8px 13px;border-bottom:1px solid var(--line);vertical-align:middle}
+thead th{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);font-weight:600;background:var(--surface-2);position:sticky;top:0;
+  border-bottom:1px solid var(--line-strong);white-space:nowrap}
+tbody tr:hover{background:var(--surface-2)}
+tbody tr:last-child td{border-bottom:0}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td.name{font-weight:500}
+.sub{display:block;font-size:11.5px;color:var(--faint);font-weight:400}
+
+/* status chips — always a word, never colour alone */
+.chip{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;padding:3px 7px;border-radius:2px;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:5px}
+.chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.c-ok{background:var(--ok-bg);color:var(--ok)}
+.c-warn{background:var(--warn-bg);color:var(--warn)}
+.c-crit{background:var(--crit-bg);color:var(--crit)}
+.c-info{background:var(--info-bg);color:var(--info)}
+.c-flat{background:var(--surface-3);color:var(--muted)}
+.chip.t::before{display:none}
+
+/* severity stripe on the overdue list */
+.sev{border-left:3px solid var(--line-strong);padding-left:11px}
+.sev.crit{border-left-color:var(--crit)}
+.sev.warn{border-left-color:var(--warn)}
+
+/* ---- bars ---- */
+.chartcard{border:1px solid var(--line);background:var(--surface);border-radius:3px;padding:16px 18px}
+.chartgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.bars{display:flex;flex-direction:column;gap:7px;margin-top:12px}
+.barrow{display:grid;grid-template-columns:96px 1fr 46px;gap:10px;align-items:center;font-size:12.3px}
+.barrow .lab{color:var(--ink-2);font-family:var(--mono);font-size:11px}
+.track{height:14px;background:var(--surface-3);border-radius:3px;position:relative;overflow:hidden}
+.fill{height:100%;background:var(--bar);border-radius:0 3px 3px 0;transition:width .5s cubic-bezier(.16,1,.3,1)}
+.fill.breach{background:var(--crit)}
+.barrow .val{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right;
+  font-size:11.5px;color:var(--muted)}
+.barrow.is-breach .val{color:var(--crit);font-weight:600}
+.thresholdnote{font-size:11.5px;color:var(--faint);margin-top:11px;
+  padding-top:9px;border-top:1px dotted var(--line-strong)}
+
+/* ---- replay timeline ---- */
+.replay{border-left:2px solid var(--line-strong);margin-left:8px;padding-left:0}
+.ev{display:grid;grid-template-columns:62px 1fr;gap:0 14px;padding:9px 0 9px 16px;
+  position:relative;border-bottom:1px solid var(--line)}
+.ev:last-child{border-bottom:0}
+.ev::before{content:"";position:absolute;left:-6px;top:16px;width:9px;height:9px;
+  border-radius:50%;background:var(--line-strong);border:2px solid var(--surface)}
+.ev.ok::before{background:var(--ok)}
+.ev.fail::before{background:var(--crit)}
+.ev.stage::before{background:var(--faint)}
+.ev .t{font-family:var(--mono);font-size:11.5px;color:var(--faint);font-variant-numeric:tabular-nums}
+.ev .l{font-size:13.2px}
+.ev.fail .l{color:var(--crit);font-weight:600}
+.ev .d{font-size:11.5px;color:var(--muted);font-family:var(--mono)}
+
+/* ---- verifier ---- */
+.verify{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media(max-width:760px){.verify{grid-template-columns:1fr}}
+textarea{width:100%;min-height:118px;font-family:var(--mono);font-size:11.5px;line-height:1.55;
+  padding:11px 12px;border:1px solid var(--line-strong);border-radius:3px;resize:vertical;
+  background:var(--surface);color:var(--ink)}
+.btnrow{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.btn{border:1px solid var(--line-strong);background:var(--surface);padding:6px 11px;
+  border-radius:3px;cursor:pointer;font-size:12.3px}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--ink);color:var(--ground);border-color:var(--ink);font-weight:600}
+.verdict{border:1px solid var(--line-strong);border-radius:3px;background:var(--surface);
+  padding:16px 18px;display:flex;flex-direction:column;gap:11px;min-height:118px}
+.verdict.ok{border-left:4px solid var(--ok)}
+.verdict.bad{border-left:4px solid var(--crit)}
+.verdict .big{font-size:19px;font-weight:700;letter-spacing:-.02em}
+.verdict.ok .big{color:var(--ok)}
+.verdict.bad .big{color:var(--crit)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:12.6px}
+.kv dt{color:var(--muted);font-family:var(--mono);font-size:11px}
+.kv dd{margin:0}
+.compgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(86px,1fr));gap:1px;
+  background:var(--line);border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.compgrid div{background:var(--surface-2);padding:7px 9px}
+.compgrid .c{font-family:var(--mono);font-size:9.5px;letter-spacing:.07em;color:var(--muted)}
+.compgrid .v{font-family:var(--mono);font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+.compgrid .v.low{color:var(--crit)}
+.note{font-size:12.3px;color:var(--muted);max-width:62ch}
+
+/* ---- tooltip ---- */
+#tip{position:fixed;pointer-events:none;opacity:0;transition:opacity .12s;z-index:50;
+  background:var(--ink);color:var(--ground);font-family:var(--mono);font-size:11px;
+  padding:6px 9px;border-radius:3px;max-width:250px;line-height:1.45}
+
+@media print{
+  nav.tabs,.btnrow,#tip,.hazard{display:none!important}
+  section[role="tabpanel"]{display:block!important;break-inside:avoid}
+  body{background:#fff;color:#000;font-size:10.5pt}
+  .tw{border:0} thead th{position:static;background:#eee}
+}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+</style>
+
+<div class="hazard"></div>
+<div class="wrap">
+
+  <header>
+    <div>
+      <p class="eyebrow">Statutory training register &middot; Mines Act 1952 / MVT Rules 1966</p>
+      <h1>Sajag Compliance Desk</h1>
+    </div>
+    <div class="meta">
+      <div>generated <span id="gen"></span></div>
+      <div>issuer VTC/JH/0447 &middot; index 7</div>
+    </div>
+  </header>
+
+  <div class="kpis" id="kpis"></div>
+
+  <nav class="tabs" role="tablist" aria-label="Compliance views">
+    <button role="tab" aria-selected="true"  aria-controls="p-register" id="t-register">Training register</button>
+    <button role="tab" aria-selected="false" aria-controls="p-due"      id="t-due">Due &amp; overdue</button>
+    <button role="tab" aria-selected="false" aria-controls="p-ctr"      id="t-ctr">Contractors</button>
+    <button role="tab" aria-selected="false" aria-controls="p-risk"     id="t-risk">Near-miss prediction</button>
+    <button role="tab" aria-selected="false" aria-controls="p-replay"   id="t-replay">Attempt replay</button>
+    <button role="tab" aria-selected="false" aria-controls="p-verify"   id="t-verify">Verify a certificate</button>
+  </nav>
+
+  <section role="tabpanel" id="p-register" aria-labelledby="t-register">
+    <div class="panel-head">
+      <div>
+        <h2>Training register</h2>
+        <p>The record a mine is obliged to hold, per worker and module. This is the
+           export — the charts are secondary.</p>
+      </div>
+      <div class="btnrow"><button class="btn" onclick="window.print()">Print / save as PDF</button></div>
+    </div>
+    <div class="tw"><table id="tbl-register"></table></div>
+  </section>
+
+  <section role="tabpanel" id="p-due" aria-labelledby="t-due" hidden>
+    <div class="panel-head"><div>
+      <h2>Due &amp; overdue</h2>
+      <p>Who must not go underground tomorrow. Sorted by how overdue, worst first.</p>
+    </div></div>
+    <div class="tw"><table id="tbl-due"></table></div>
+  </section>
+
+  <section role="tabpanel" id="p-ctr" aria-labelledby="t-ctr" hidden>
+    <div class="panel-head"><div>
+      <h2>Contractor compliance</h2>
+      <p>The population the problem statement says is being missed. Percentage of each
+         firm's workers currently certified on both modules.</p>
+    </div></div>
+    <div id="ctr-cards" class="chartgrid"></div>
+  </section>
+
+  <section role="tabpanel" id="p-risk" aria-labelledby="t-risk" hidden>
+    <div class="panel-head"><div>
+      <h2>Near-miss prediction</h2>
+      <p>Share of attempts scoring below the competency floor, by crew and module.
+         A paper register cannot tell you this, and it is the closest thing here to a
+         forecast of where the next incident happens. Worst first.</p>
+    </div></div>
+    <div id="risk-cards" class="chartgrid"></div>
+  </section>
+
+  <section role="tabpanel" id="p-replay" aria-labelledby="t-replay" hidden>
+    <div class="panel-head"><div>
+      <h2>Attempt replay</h2>
+      <p id="replay-sub"></p>
+    </div></div>
+    <div class="chartcard"><div class="replay" id="replay"></div></div>
+  </section>
+
+  <section role="tabpanel" id="p-verify" aria-labelledby="t-verify" hidden>
+    <div class="panel-head"><div>
+      <h2>Verify a certificate</h2>
+      <p>The same check the inspector's phone runs, in your browser. The signature is
+         checked locally against the cached issuer key — nothing is sent anywhere, and
+         this page works with the network off.</p>
+    </div></div>
+    <div class="verify">
+      <div>
+        <label class="eyebrow" for="qrin">Paste the QR text</label>
+        <textarea id="qrin" spellcheck="false" aria-describedby="qrhelp"></textarea>
+        <div class="btnrow">
+          <button class="btn primary" id="btn-verify">Verify</button>
+          <button class="btn" data-sample="valid">Load a valid one</button>
+          <button class="btn" data-sample="tier3Provisional">Guided mode, provisional</button>
+          <button class="btn" data-sample="expired">Expired</button>
+          <button class="btn" data-sample="tampered">Tampered</button>
+        </div>
+        <p class="note" id="qrhelp" style="margin-top:11px">
+          Ed25519 verification uses the browser's own WebCrypto. If your browser is
+          older than about 2024 it may not support it — the verdict will say so
+          plainly rather than failing silently.
+        </p>
+      </div>
+      <div class="verdict" id="verdict">
+        <div class="big">Ready</div>
+        <p class="note">Load one of the samples, or paste a certificate.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+<div id="tip" role="status" aria-live="polite"></div>
+<div class="hazard"></div>
+
+<script type="application/json" id="sajag-data">{"generatedOn":"2026-09-13","issuerPublicKeyHex":"03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8","issuerIndex":7,"competencies":["HAZ-ID","EQP-SEL","SEQ","EGR","TECH","KNW"],"workers":[{"id":"wkr-1000","name":"Ramesh Bhagat","contractor":"CTR-2291","contractorName":"Jharia Coal Services","site":"Jharia Block IV","role":"Loader operator","daysOnJob":608},{"id":"wkr-1001","name":"Sita Hembrom","contractor":"CTR-3140","contractorName":"Bokaro Works Pvt Ltd","site":"Bokaro Steel Plant","role":"Support crew","daysOnJob":810},{"id":"wkr-1002","name":"Birsa Hembrom","contractor":"CTR-5522","contractorName":"Koderma Mica Labour Co-op","site":"Koderma Mica Unit 2","role":"Conveyor attendant","daysOnJob":318},{"id":"wkr-1003","name":"Mangal Singh","contractor":"CTR-2291","contractorName":"Jharia Coal Services","site":"Jharia Block IV","role":"Sump crew","daysOnJob":685},{"id":"wkr-1004","name":"Anil Hembrom","contractor":"CTR-3140","contractorName":"Bokaro Works Pvt Ltd","site":"Bokaro Steel Plant","role":"Trainee","daysOnJob":372},{"id":"wkr-1005","name":"Sunita Hembrom","contractor":"CTR-5522","contractorName":"Koderma Mica Labour Co-op","site":"Koderma Mica Unit 2","role":"Loader operator","daysOnJob":518},{"id":"wkr-1006","name":"Dilip Oraon","contractor":"CTR-2291","contractorName":"Jharia Coal Services","site":"Jharia Block IV","role":"Support crew","daysOnJob":521},{"id":"wkr-1007","name":"Phulmani Tudu","contractor":"CTR-3140","contractorName":"Bokaro Works Pvt Ltd","site":"Bokaro Steel Plant","role":"Conveyor attendant","daysOnJob":405},{"id":"wkr-1008","name":"Karan Mahato","contractor":"CTR-5522","contractorName":"Koderma Mica Labour Co-op","site":"Koderma Mica Unit 2","role":"Sump crew","daysOnJob":569},{"id":"wkr-1009","name":"Budhan Mahato","contractor":"CTR-2291","contractorName":"Jharia Coal Services","site":"Jharia Block IV","role":"Trainee","daysOnJob":893},{"id":"wkr-1010","name":"Rekha Tudu","contractor":"CTR-3140","contractorName":"Bokaro Works Pvt Ltd","site":"Bokaro Steel Plant","role":"Loader operator","daysOnJob":735},{"id":"wkr-1011","name":"Shyam Hembrom","contractor":"CTR-5522","contractorName":"Koderma Mica Labour Co-op","site":"Koderma Mica Unit 2","role":"Support crew","daysOnJob":182},{"id":"wkr-1012","name":"Jitu Mahato","contractor":"CTR-2291","contractorName":"Jharia Coal Services","site":"Jharia Block IV","role":"Conveyor attendant","daysOnJob":485},{"id":"wkr-1013","name":"Somra Oraon","contractor":"CTR-3140","contractorName":"Bokaro Works Pvt Ltd","site":"Bokaro Steel Plant","role":"Sump crew","daysOnJob":553},{"id":"wkr-1014","name":"Basanti Bhagat","contractor":"CTR-5522","contractorName":"Koderma Mica Labour Co-op","site":"Koderma Mica Unit 2","role":"Trainee","daysOnJob":785},{"id":"wkr-1015","name":"Ajay Mahato","contractor":"CTR-2291","contractorName":"Jharia Coal Services","site":"Jharia Block IV","role":"Loader operator","daysOnJob":421},{"id":"wkr-1016","name":"Mukesh Munda","contractor":"CTR-3140","contractorName":"Bokaro Works Pvt Ltd","site":"Bokaro Steel Plant","role":"Support crew","daysOnJob":567},{"id":"wkr-1017","name":"Lakhan Kumar","contractor":"CTR-5522","contractorName":"Koderma Mica Labour Co-op","site":"Koderma Mica Unit 2","role":"Conveyor attendant","daysOnJob":828},{"id":"wkr-1018","name":"Champa Oraon","contractor":"CTR-2291","contractorName":"Jharia Coal Services","site":"Jharia Block IV","role":"Sump crew","daysOnJob":512},{"id":"wkr-1019","name":"Ravi Mahato","contractor":"CTR-3140","contractorName":"Bokaro Works Pvt Ltd","site":"Bokaro Steel Plant","role":"Trainee","daysOnJob":504},{"id":"wkr-1020","name":"Sanjay Hembrom","contractor":"CTR-5522","contractorName":"Koderma Mica Labour Co-op","site":"Koderma Mica Unit 2","role":"Loader operator","daysOnJob":727},{"id":"wkr-1021","name":"Kunti Kumar","contractor":"CTR-2291","contractorName":"Jharia Coal Services","site":"Jharia Block IV","role":"Support crew","daysOnJob":533},{"id":"wkr-1022","name":"Bhola Murmu","contractor":"CTR-3140","contractorName":"Bokaro Works Pvt Ltd","site":"Bokaro Steel Plant","role":"Conveyor attendant","daysOnJob":139},{"id":"wkr-1023","name":"Devi Tudu","contractor":"CTR-5522","contractorName":"Koderma Mica Labour Co-op","site":"Koderma Mica Unit 2","role":"Sump crew","daysOnJob":522}],"register":[{"workerId":"wkr-1000","module":"FIRE-01","tier":1,"score":91,"competencies":{"HAZ-ID":78,"EQP-SEL":100,"SEQ":97,"EGR":89,"TECH":100,"KNW":81},"certifiedOn":"2026-05-06","expires":"2027-05-06","daysToExpiry":235,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1000","module":"GAS-01","tier":3,"score":85,"competencies":{"HAZ-ID":84,"EQP-SEL":100,"SEQ":74,"EGR":64,"TECH":91,"KNW":99},"certifiedOn":"2025-08-03","expires":"2026-08-03","daysToExpiry":-41,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1001","module":"FIRE-01","tier":1,"score":84,"competencies":{"HAZ-ID":77,"EQP-SEL":100,"SEQ":75,"EGR":86,"TECH":80,"KNW":87},"certifiedOn":"2025-11-13","expires":"2026-11-13","daysToExpiry":61,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1002","module":"FIRE-01","tier":2,"score":79,"competencies":{"HAZ-ID":73,"EQP-SEL":100,"SEQ":70,"EGR":69,"TECH":92,"KNW":69},"certifiedOn":"2025-10-17","expires":"2026-10-17","daysToExpiry":34,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1002","module":"GAS-01","tier":1,"score":77,"competencies":{"HAZ-ID":80,"EQP-SEL":100,"SEQ":62,"EGR":60,"TECH":88,"KNW":71},"certifiedOn":"2025-12-19","expires":"2026-12-19","daysToExpiry":97,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1003","module":"FIRE-01","tier":1,"score":89,"competencies":{"HAZ-ID":94,"EQP-SEL":100,"SEQ":98,"EGR":84,"TECH":83,"KNW":77},"certifiedOn":"2025-11-18","expires":"2026-11-18","daysToExpiry":66,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1003","module":"GAS-01","tier":2,"score":92,"competencies":{"HAZ-ID":96,"EQP-SEL":100,"SEQ":98,"EGR":71,"TECH":100,"KNW":87},"certifiedOn":"2025-12-06","expires":"2026-12-06","daysToExpiry":84,"trainer":"VTC/JH/0447","coSigned":false},{"workerId":"wkr-1004","module":"FIRE-01","tier":1,"score":88,"competencies":{"HAZ-ID":81,"EQP-SEL":100,"SEQ":77,"EGR":82,"TECH":92,"KNW":93},"certifiedOn":"2026-08-10","expires":"2027-08-10","daysToExpiry":331,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1004","module":"GAS-01","tier":2,"score":91,"competencies":{"HAZ-ID":98,"EQP-SEL":100,"SEQ":75,"EGR":73,"TECH":98,"KNW":100},"certifiedOn":"2026-06-16","expires":"2027-06-16","daysToExpiry":276,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1005","module":"FIRE-01","tier":2,"score":84,"competencies":{"HAZ-ID":73,"EQP-SEL":100,"SEQ":75,"EGR":63,"TECH":91,"KNW":100},"certifiedOn":"2026-08-24","expires":"2027-08-24","daysToExpiry":345,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1006","module":"FIRE-01","tier":2,"score":85,"competencies":{"HAZ-ID":70,"EQP-SEL":100,"SEQ":84,"EGR":93,"TECH":91,"KNW":71},"certifiedOn":"2026-06-17","expires":"2027-06-17","daysToExpiry":277,"trainer":"VTC/JH/0447","coSigned":false},{"workerId":"wkr-1006","module":"GAS-01","tier":2,"score":86,"competencies":{"HAZ-ID":90,"EQP-SEL":100,"SEQ":55,"EGR":84,"TECH":96,"KNW":88},"certifiedOn":"2025-10-02","expires":"2026-10-02","daysToExpiry":19,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1007","module":"FIRE-01","tier":3,"score":93,"competencies":{"HAZ-ID":85,"EQP-SEL":100,"SEQ":100,"EGR":78,"TECH":100,"KNW":96},"certifiedOn":"2026-02-12","expires":"2027-02-12","daysToExpiry":152,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1007","module":"GAS-01","tier":2,"score":84,"competencies":{"HAZ-ID":79,"EQP-SEL":100,"SEQ":79,"EGR":72,"TECH":90,"KNW":85},"certifiedOn":"2026-04-23","expires":"2027-04-23","daysToExpiry":222,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1008","module":"FIRE-01","tier":1,"score":88,"competencies":{"HAZ-ID":90,"EQP-SEL":100,"SEQ":80,"EGR":83,"TECH":89,"KNW":86},"certifiedOn":"2025-09-15","expires":"2026-09-15","daysToExpiry":2,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1008","module":"GAS-01","tier":2,"score":90,"competencies":{"HAZ-ID":100,"EQP-SEL":100,"SEQ":92,"EGR":90,"TECH":84,"KNW":77},"certifiedOn":"2026-06-22","expires":"2027-06-22","daysToExpiry":282,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1009","module":"FIRE-01","tier":2,"score":84,"competencies":{"HAZ-ID":85,"EQP-SEL":100,"SEQ":100,"EGR":71,"TECH":80,"KNW":65},"certifiedOn":"2026-06-21","expires":"2027-06-21","daysToExpiry":281,"trainer":"VTC/JH/0447","coSigned":false},{"workerId":"wkr-1009","module":"GAS-01","tier":2,"score":72,"competencies":{"HAZ-ID":100,"EQP-SEL":32,"SEQ":68,"EGR":74,"TECH":93,"KNW":67},"certifiedOn":"2025-09-14","expires":"2026-09-14","daysToExpiry":1,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1010","module":"FIRE-01","tier":2,"score":86,"competencies":{"HAZ-ID":94,"EQP-SEL":100,"SEQ":61,"EGR":89,"TECH":85,"KNW":88},"certifiedOn":"2025-12-25","expires":"2026-12-25","daysToExpiry":103,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1010","module":"GAS-01","tier":2,"score":86,"competencies":{"HAZ-ID":86,"EQP-SEL":100,"SEQ":87,"EGR":77,"TECH":73,"KNW":91},"certifiedOn":"2025-09-23","expires":"2026-09-23","daysToExpiry":10,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1011","module":"FIRE-01","tier":1,"score":80,"competencies":{"HAZ-ID":73,"EQP-SEL":100,"SEQ":84,"EGR":74,"TECH":78,"KNW":73},"certifiedOn":"2026-07-29","expires":"2027-07-29","daysToExpiry":319,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1011","module":"GAS-01","tier":3,"score":86,"competencies":{"HAZ-ID":55,"EQP-SEL":100,"SEQ":93,"EGR":100,"TECH":81,"KNW":87},"certifiedOn":"2025-10-26","expires":"2026-10-26","daysToExpiry":43,"trainer":"VTC/JH/0447","coSigned":false},{"workerId":"wkr-1012","module":"FIRE-01","tier":2,"score":85,"competencies":{"HAZ-ID":87,"EQP-SEL":100,"SEQ":75,"EGR":99,"TECH":74,"KNW":75},"certifiedOn":"2026-02-24","expires":"2027-02-24","daysToExpiry":164,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1013","module":"FIRE-01","tier":2,"score":88,"competencies":{"HAZ-ID":94,"EQP-SEL":100,"SEQ":63,"EGR":94,"TECH":100,"KNW":77},"certifiedOn":"2025-11-03","expires":"2026-11-03","daysToExpiry":51,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1013","module":"GAS-01","tier":2,"score":92,"competencies":{"HAZ-ID":88,"EQP-SEL":100,"SEQ":100,"EGR":89,"TECH":91,"KNW":83},"certifiedOn":"2025-11-10","expires":"2026-11-10","daysToExpiry":58,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1014","module":"FIRE-01","tier":1,"score":79,"competencies":{"HAZ-ID":78,"EQP-SEL":55,"SEQ":86,"EGR":88,"TECH":83,"KNW":82},"certifiedOn":"2025-09-28","expires":"2026-09-28","daysToExpiry":15,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1014","module":"GAS-01","tier":3,"score":68,"competencies":{"HAZ-ID":44,"EQP-SEL":19,"SEQ":72,"EGR":93,"TECH":85,"KNW":98},"certifiedOn":"2026-03-23","expires":"2027-03-23","daysToExpiry":191,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1015","module":"FIRE-01","tier":2,"score":82,"competencies":{"HAZ-ID":74,"EQP-SEL":100,"SEQ":88,"EGR":63,"TECH":95,"KNW":73},"certifiedOn":"2025-10-13","expires":"2026-10-13","daysToExpiry":30,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1015","module":"GAS-01","tier":1,"score":94,"competencies":{"HAZ-ID":100,"EQP-SEL":100,"SEQ":100,"EGR":89,"TECH":100,"KNW":76},"certifiedOn":"2026-02-08","expires":"2027-02-08","daysToExpiry":148,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1017","module":"FIRE-01","tier":2,"score":90,"competencies":{"HAZ-ID":88,"EQP-SEL":100,"SEQ":87,"EGR":80,"TECH":88,"KNW":100},"certifiedOn":"2025-11-08","expires":"2026-11-08","daysToExpiry":56,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1017","module":"GAS-01","tier":1,"score":69,"competencies":{"HAZ-ID":34,"EQP-SEL":58,"SEQ":69,"EGR":74,"TECH":94,"KNW":86},"certifiedOn":"2025-07-28","expires":"2026-07-28","daysToExpiry":-47,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1018","module":"GAS-01","tier":3,"score":88,"competencies":{"HAZ-ID":100,"EQP-SEL":100,"SEQ":74,"EGR":99,"TECH":79,"KNW":79},"certifiedOn":"2026-05-23","expires":"2027-05-23","daysToExpiry":252,"trainer":"VTC/JH/0447","coSigned":false},{"workerId":"wkr-1019","module":"GAS-01","tier":2,"score":82,"competencies":{"HAZ-ID":77,"EQP-SEL":100,"SEQ":83,"EGR":77,"TECH":74,"KNW":79},"certifiedOn":"2025-12-25","expires":"2026-12-25","daysToExpiry":103,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1020","module":"FIRE-01","tier":3,"score":82,"competencies":{"HAZ-ID":66,"EQP-SEL":100,"SEQ":82,"EGR":87,"TECH":85,"KNW":72},"certifiedOn":"2026-02-18","expires":"2027-02-18","daysToExpiry":158,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1020","module":"GAS-01","tier":1,"score":91,"competencies":{"HAZ-ID":82,"EQP-SEL":100,"SEQ":87,"EGR":97,"TECH":86,"KNW":93},"certifiedOn":"2026-02-24","expires":"2027-02-24","daysToExpiry":164,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1021","module":"FIRE-01","tier":2,"score":88,"competencies":{"HAZ-ID":97,"EQP-SEL":100,"SEQ":88,"EGR":69,"TECH":72,"KNW":100},"certifiedOn":"2026-05-30","expires":"2027-05-30","daysToExpiry":259,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1021","module":"GAS-01","tier":1,"score":84,"competencies":{"HAZ-ID":78,"EQP-SEL":100,"SEQ":84,"EGR":68,"TECH":81,"KNW":94},"certifiedOn":"2026-08-28","expires":"2027-08-28","daysToExpiry":349,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1022","module":"FIRE-01","tier":1,"score":86,"competencies":{"HAZ-ID":85,"EQP-SEL":100,"SEQ":90,"EGR":67,"TECH":88,"KNW":87},"certifiedOn":"2026-07-23","expires":"2027-07-23","daysToExpiry":313,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1022","module":"GAS-01","tier":1,"score":84,"competencies":{"HAZ-ID":68,"EQP-SEL":100,"SEQ":76,"EGR":89,"TECH":86,"KNW":83},"certifiedOn":"2026-04-26","expires":"2027-04-26","daysToExpiry":225,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1023","module":"FIRE-01","tier":2,"score":71,"competencies":{"HAZ-ID":90,"EQP-SEL":8,"SEQ":71,"EGR":79,"TECH":83,"KNW":94},"certifiedOn":"2026-03-23","expires":"2027-03-23","daysToExpiry":191,"trainer":"VTC/JH/0447","coSigned":true},{"workerId":"wkr-1023","module":"GAS-01","tier":1,"score":70,"competencies":{"HAZ-ID":58,"EQP-SEL":48,"SEQ":75,"EGR":75,"TECH":78,"KNW":87},"certifiedOn":"2026-07-26","expires":"2027-07-26","daysToExpiry":316,"trainer":"VTC/JH/0447","coSigned":true}],"samples":{"valid":"SJG1:630%5017A3UHU4KDQ3J6TV6NUB52EN39DTIAF$DOQEN34 8D53DAWE1N8MHAPF6GA7100P33/*82VCODBQCAXDS+GRK40ZAVL-NATA/Q9RSAJ73NT1RE1X10$%JY1T QDRD4YLRCDJ%YFIQN1ONN+NJC6JVOR0W4SVFRQ4*EMUA VAKQFV/7R9CS4ES056GMYAMMJK5Z7WV6.TSGHFFHE30","tier3Provisional":"SJG1:630%50W7A6.SQ$N.XLM-SSRI$F7DNLJ20J7A0%EB$D5/D-34$$E-$E1N8MHAAL6+Q6300R335+85VC/+9-7CK.L+9HBRD 88UA2OM94$H886I73VNNYC1-50/ 0H98SXO:NG1YLY.5 YCTUNZY3OWN%R07L7Y9SJ8O$KGJ1L$3P.BQTO1GDK0JJ /8P PRTMI+PKVT:-LR2NFIS3%HUIGC0","expired":"SJG1:630%50Z7AB5UQNIDVGR*A723+SAK2EDXR H84LEOCC%69C$D0LEI$D1N8MHAVW6PF6200D33%*8KUCQY8EY8R%FZZB553/+NUU4 ZNAADWFIG73PYMB11T40SIJUXLH:1B*V*32 CGVTU08QBW3$/C.PF5VMEV3SOKA/S MSOMN3F52KJ.DAXJRC-H4JJT2I33K15CT9JG:UDT1+$R.KU90","tampered":"SJG1:630%5017A3UHU4KDQ3J6TV6NUB52EN49DTIAF$DOQEN34 8D53DAWE1N8MHAPF6GA7100P33/*82VCODBQCAXDS+GRK40ZAVL-NATA/Q9RSAJ73NT1RE1X10$%JY1T QDRD4YLRCDJ%YFIQN1ONN+NJC6JVOR0W4SVFRQ4*EMUA VAKQFV/7R9CS4ES056GMYAMMJK5Z7WV6.TSGHFFHE30"},"replay":{"workerId":"wkr-1000","workerName":"Ramesh Bhagat","module":"FIRE-01","attemptId":"att-01JD8Q4M2","events":[{"t":0,"beat":"1.1","label":"Scene ready, control handed over","kind":"stage"},{"t":4.2,"beat":"1.1","label":"Classified fire as electrical","kind":"ok","detail":"4.2 s"},{"t":6.8,"beat":"1.1","label":"Standoff 3.1 m","kind":"ok","detail":"within 1.5–6.0 m"},{"t":11.4,"beat":"1.2","label":"Reached for WATER extinguisher","kind":"fail","detail":"hard fail — WATER_ON_ELECTRICAL"},{"t":11.4,"beat":"1.2","label":"Certification blocked, beat replayed","kind":"stage"},{"t":38.9,"beat":"1.2","label":"Selected CO₂ on replay","kind":"ok","detail":"gauge checked"},{"t":52.1,"beat":"1.3","label":"Aim 9° from base, sweep 82%","kind":"ok","detail":"target 70%"},{"t":71.6,"beat":"1.4","label":"Exit north, wall contact 88%","kind":"ok","detail":"head 0.9 m"},{"t":96.3,"beat":"1.5","label":"Response order correct","kind":"ok","detail":"alarm at 7.4 s"}]}}</script>
+<script type="module">
+/**
+ * The credential codec, third implementation.
+ *
+ * Python mints. Kotlin verifies on the inspector's phone. This one verifies in
+ * a browser, for the dashboard's verifier console — so a contractor's HR clerk
+ * or a gate guard with no app installed can still check a certificate.
+ *
+ * THREE hand-written implementations of one wire format is exactly how a
+ * format drifts apart, so this file is held to the same rule as the other two:
+ * it is checked against golden vectors minted by the Python source of truth,
+ * in CI, on every push. See web/test/codec.vectors.test.mjs.
+ *
+ * Zero dependencies. WebCrypto has shipped Ed25519 in Node 18+ and in current
+ * Chrome, Safari and Firefox, so there is no npm package here to audit, pin,
+ * or have go unmaintained before December. `isSupported()` reports honestly
+ * rather than failing in a confusing way on an older browser.
+ */
+
+const PREFIX = 'SJG1:';
+const SIG_LEN = 64;
+const EPOCH = Date.UTC(2020, 0, 1);
+const DAY_MS = 86400000;
+
+const COMPETENCIES = ['HAZ-ID', 'EQP-SEL', 'SEQ', 'EGR', 'TECH', 'KNW'];
+const MODULES = ['FIRE-01', 'GAS-01', 'MACH-01', 'HEIGHT-01', 'ELEC-01'];
+const B45 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:';
+
+/* ------------------------------------------------------------------ base45 */
+
+function base45Decode(text) {
+  const v = [];
+  for (const ch of text) {
+    const i = B45.indexOf(ch);
+    if (i < 0) throw new Error(`character '${ch}' is not in the base45 alphabet`);
+    v.push(i);
+  }
+  if (v.length % 3 === 1) throw new Error('length % 3 == 1 is never valid base45');
+
+  const out = [];
+  let i = 0;
+  for (; i + 2 < v.length; i += 3) {
+    const n = v[i] + v[i + 1] * 45 + v[i + 2] * 45 * 45;
+    if (n > 0xffff) throw new Error('triplet overflows two bytes');
+    out.push(n >> 8, n & 0xff);
+  }
+  if (v.length % 3 === 2) {
+    const n = v[v.length - 2] + v[v.length - 1] * 45;
+    if (n > 0xff) throw new Error('final pair overflows one byte');
+    out.push(n);
+  }
+  return new Uint8Array(out);
+}
+
+/* -------------------------------------------------------------------- CBOR */
+
+/** Deterministic subset: uint, bstr, tstr, array. Mirror of cbor_min.py. */
+function cborDecode(buf) {
+  const [item, used] = decodeAt(buf, 0);
+  if (used !== buf.length) throw new Error(`${buf.length - used} trailing byte(s)`);
+  return item;
+}
+
+function decodeAt(buf, start) {
+  if (start >= buf.length) throw new Error('truncated: expected a head byte');
+  const b = buf[start];
+  const major = b >> 5;
+  let value = b & 0x1f;
+  let i = start + 1;
+
+  if (value >= 24) {
+    const width = { 24: 1, 25: 2, 26: 4, 27: 8 }[value];
+    if (width === undefined) throw new Error(`unsupported additional-info ${value}`);
+    if (i + width > buf.length) throw new Error('truncated: incomplete length field');
+    value = 0;
+    for (let k = 0; k < width; k++) value = value * 256 + buf[i++];
+  }
+
+  if (major === 0) return [value, i];
+
+  if (major === 2 || major === 3) {
+    const end = i + value;
+    if (end > buf.length) throw new Error('truncated: string runs past end of buffer');
+    const slice = buf.subarray(i, end);
+    if (major === 2) return [slice, end];
+    // Strict UTF-8. A tampered QR routinely lands here with invalid bytes, and
+    // that must be a rejection — not U+FFFD substitution, which would let two
+    // implementations disagree about a worker's name.
+    return [new TextDecoder('utf-8', { fatal: true }).decode(slice), end];
+  }
+
+  if (major === 4) {
+    const list = [];
+    for (let k = 0; k < value; k++) {
+      const [el, next] = decodeAt(buf, i);
+      list.push(el);
+      i = next;
+    }
+    return [list, i];
+  }
+
+  throw new Error(`major type ${major} is not in this subset`);
+}
+
+/* -------------------------------------------------------------- credential */
+
+function inflateIfNeeded(blob) {
+  if (blob.length === 0) throw new Error('empty payload');
+  if (blob[0] === 0) return blob.subarray(1);
+  if (blob[0] === 1) {
+    // The Python side only sets this marker when deflate actually helps, which
+    // for a 148-byte credential carrying a 64-byte incompressible signature is
+    // essentially never. Supported for format completeness.
+    if (typeof DecompressionStream === 'undefined')
+      throw new Error('this credential is compressed and this browser cannot inflate it');
+    throw new Error('compressed credentials need the async path — use verifyAsync');
+  }
+  throw new Error(`unknown compression marker ${blob[0]}`);
+}
+
+function dateFromDays(days) {
+  return new Date(EPOCH + days * DAY_MS).toISOString().slice(0, 10);
+}
+
+function toHex(bytes) {
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+function fromHex(hex) {
+  const out = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < out.length; i++) out[i] = parseInt(hex.substr(i * 2, 2), 16);
+  return out;
+}
+
+function isSupported() {
+  return typeof crypto !== 'undefined' &&
+    crypto.subtle !== undefined &&
+    typeof TextDecoder !== 'undefined';
+}
+
+async function importIssuerKey(rawHex) {
+  // Raw 32-byte key wrapped in the fixed X.509 SPKI prefix — the least fiddly
+  // way to hand an Ed25519 key to WebCrypto, and identical to what the Java
+  // cross-check does.
+  const der = new Uint8Array(12 + 32);
+  der.set(fromHex('302a300506032b6570032100'), 0);
+  der.set(fromHex(rawHex), 12);
+  return crypto.subtle.importKey('spki', der, { name: 'Ed25519' }, false, ['verify']);
+}
+
+/**
+ * Verify a scanned or pasted QR.
+ *
+ * @param {string} qrText
+ * @param {Object<number,string>} trustList issuer index -> raw public key hex
+ * @param {{revoked?: Set<string>, today?: Date}} opts
+ * @returns {Promise<{ok: boolean, reason: string, credential: object|null, warnings: string[]}>}
+ *
+ * Never throws on bad input. A verifier that crashes on a bad scan is one the
+ * person using it stops trusting — the Python suite found exactly that bug, so
+ * it is pinned in all three implementations.
+ */
+async function verify(qrText, trustList, opts = {}) {
+  const today = opts.today ?? new Date();
+  const revoked = opts.revoked ?? new Set();
+  const fail = (reason, credential = null) => ({ ok: false, reason, credential, warnings: [] });
+
+  if (!isSupported()) return fail('This browser cannot check Ed25519 signatures.');
+  if (typeof qrText !== 'string' || !qrText.startsWith(PREFIX))
+    return fail('Not a Sajag certificate');
+
+  let raw;
+  try {
+    raw = inflateIfNeeded(base45Decode(qrText.slice(PREFIX.length)));
+  } catch (e) {
+    return fail(`Damaged code — ${e.message}`);
+  }
+  if (raw.length <= SIG_LEN) return fail('Damaged code — payload too short');
+
+  const payload = raw.subarray(0, raw.length - SIG_LEN);
+  const signature = raw.subarray(raw.length - SIG_LEN);
+
+  let p;
+  try {
+    p = cborDecode(payload);
+  } catch (e) {
+    return fail(`Damaged code — ${e.message}`);
+  }
+
+  let cred;
+  try {
+    if (!Array.isArray(p) || p.length < 13) throw new Error('payload is not a 13-element array');
+    if (p[0] !== 1) throw new Error(`unsupported credential version ${p[0]}`);
+    const comps = p[8];
+    if (!(comps instanceof Uint8Array) || comps.length !== COMPETENCIES.length)
+      throw new Error('competency block has the wrong length');
+    const module = MODULES[p[5]];
+    if (module === undefined) throw new Error(`unknown module index ${p[5]}`);
+
+    cred = {
+      issuerIndex: p[1],
+      subjectIdHex: toHex(p[2]),
+      name: p[3],
+      employerCode: p[4],
+      module,
+      tier: p[6],
+      score: p[7],
+      competencies: Object.fromEntries(COMPETENCIES.map((c, i) => [c, comps[i]])),
+      attemptDigestHex: toHex(p[9]),
+      notBefore: dateFromDays(p[10]),
+      expires: dateFromDays(p[11]),
+      provisional: (p[12] & 1) !== 0,
+    };
+    cred.credentialId = cred.attemptDigestHex;
+  } catch (e) {
+    return fail(`Damaged code — ${e.message}`);
+  }
+
+  const keyHex = trustList[cred.issuerIndex];
+  if (!keyHex) return fail('Unknown issuer — update the trust list', cred);
+
+  let good = false;
+  try {
+    const key = await importIssuerKey(keyHex);
+    good = await crypto.subtle.verify({ name: 'Ed25519' }, key, signature, payload);
+  } catch {
+    return fail('Could not check the signature on this device', cred);
+  }
+  if (!good) return fail('Signature does not match — certificate altered', cred);
+
+  if (revoked.has(cred.credentialId)) return fail('Certificate has been revoked', cred);
+
+  const day = today.toISOString().slice(0, 10);
+  if (day < cred.notBefore) return fail(`Not valid until ${cred.notBefore}`, cred);
+  if (day > cred.expires) return fail(`Expired on ${cred.expires}`, cred);
+
+  const warnings = [];
+  if (cred.provisional)
+    warnings.push('Provisional — issued offline by the worker’s device and not yet ' +
+                  'confirmed by the training centre.');
+  if (cred.tier === 3) warnings.push('Trained in guided 2D mode (no camera).');
+
+  return { ok: true, reason: 'Valid', credential: cred, warnings };
+}
+
+
+const DATA = JSON.parse(document.getElementById('sajag-data').textContent);
+const TRUST = { [DATA.issuerIndex]: DATA.issuerPublicKeyHex };
+const byId = Object.fromEntries(DATA.workers.map(w => [w.id, w]));
+const FLOORS = { 'HAZ-ID':70, 'EQP-SEL':100, 'SEQ':75, 'EGR':70, 'TECH':65, 'KNW':60 };
+const $ = s => document.querySelector(s);
+
+document.getElementById('gen').textContent = DATA.generatedOn;
+
+/* ---------------------------------------------------------------- KPIs */
+const trained = new Set(DATA.register.map(r => r.workerId));
+const overdue = DATA.register.filter(r => r.daysToExpiry < 0);
+const soon = DATA.register.filter(r => r.daysToExpiry >= 0 && r.daysToExpiry <= 60);
+const never = DATA.workers.filter(w => !trained.has(w.id));
+const newStarters = DATA.workers.filter(w => w.daysOnJob < 30);
+
+$('#kpis').innerHTML = [
+  ['', DATA.workers.length, 'workers on the roster'],
+  ['is-crit', overdue.length, 'certifications expired'],
+  ['is-warn', soon.length, 'expiring within 60 days'],
+  ['is-crit', never.length, 'never trained on a module'],
+  ['is-warn', newStarters.length, 'under 30 days on the job'],
+].map(([cls, n, l]) =>
+  `<div class="kpi ${cls}"><span class="n">${n}</span><span class="l">${l}</span></div>`).join('');
+
+/* ------------------------------------------------------------- register */
+/* The certificate's "tier" field is the mode the drill ran in. */
+const MODES = { 1: 'AR', 2: 'Camera', 3: 'Guided' };
+const modeChip = t => `<span class="chip t ${t===1?'c-info':t===2?'c-flat':'c-warn'}">${MODES[t] || '?'}</span>`;
+const statusChip = d => d < 0
+  ? `<span class="chip c-crit">Expired ${-d}d</span>`
+  : d <= 60 ? `<span class="chip c-warn">Due in ${d}d</span>`
+            : `<span class="chip c-ok">Current</span>`;
+
+$('#tbl-register').innerHTML = `
+  <thead><tr><th>Worker</th><th>Contractor</th><th>Module</th><th>Mode</th>
+    <th class="num">Score</th><th>Certified</th><th>Expires</th><th>Status</th>
+    <th>Co-signed</th></tr></thead>
+  <tbody>${DATA.register.map(r => {
+    const w = byId[r.workerId];
+    return `<tr>
+      <td class="name">${w.name}<span class="sub">${w.role} · ${w.site}</span></td>
+      <td>${w.contractor}<span class="sub">${w.contractorName}</span></td>
+      <td class="mono">${r.module}</td>
+      <td>${modeChip(r.tier)}</td>
+      <td class="num">${r.score}</td>
+      <td class="num">${r.certifiedOn}</td>
+      <td class="num">${r.expires}</td>
+      <td>${statusChip(r.daysToExpiry)}</td>
+      <td>${r.coSigned ? '<span class="chip c-ok">Yes</span>'
+                       : '<span class="chip c-crit">Missing</span>'}</td>
+    </tr>`;}).join('')}</tbody>`;
+
+/* ------------------------------------------------------------------ due */
+const dueRows = [...DATA.register].filter(r => r.daysToExpiry <= 60)
+  .sort((a,b) => a.daysToExpiry - b.daysToExpiry);
+const neverRows = never.map(w => ({ worker:w, module:'— none —', daysToExpiry:null }));
+
+$('#tbl-due').innerHTML = `
+  <thead><tr><th>Worker</th><th>Module</th><th>Site</th><th class="num">Status</th>
+    <th>Action</th></tr></thead>
+  <tbody>
+  ${neverRows.map(n => `<tr>
+      <td class="name sev crit">${n.worker.name}<span class="sub">${n.worker.contractor} · ${n.worker.daysOnJob} days on the job</span></td>
+      <td class="mono">${n.module}</td><td>${n.worker.site}</td>
+      <td><span class="chip c-crit">Never trained</span></td>
+      <td>Book onto the next initial session</td></tr>`).join('')}
+  ${dueRows.map(r => { const w = byId[r.workerId]; const crit = r.daysToExpiry < 0;
+    return `<tr>
+      <td class="name sev ${crit?'crit':'warn'}">${w.name}<span class="sub">${w.contractor} · ${w.role}</span></td>
+      <td class="mono">${r.module}</td><td>${w.site}</td>
+      <td>${statusChip(r.daysToExpiry)}</td>
+      <td>${crit ? 'Withdraw from duty until refreshed' : 'Schedule refresher'}</td></tr>`;}).join('')}
+  </tbody>`;
+
+/* ---------------------------------------------------------- contractors */
+function bar(label, pct, breach, tipText) {
+  const w = Math.max(0, Math.min(100, pct));
+  return `<div class="barrow ${breach?'is-breach':''}" data-tip="${tipText}">
+      <span class="lab">${label}</span>
+      <div class="track"><div class="fill ${breach?'breach':''}" style="width:${w}%"></div></div>
+      <span class="val">${Math.round(pct)}%</span></div>`;
+}
+
+const contractors = [...new Set(DATA.workers.map(w => w.contractor))];
+$('#ctr-cards').innerHTML = contractors.map(code => {
+  const crew = DATA.workers.filter(w => w.contractor === code);
+  const name = crew[0].contractorName;
+  const rows = ['FIRE-01','GAS-01'].map(mod => {
+    const ok = crew.filter(w => DATA.register.some(
+      r => r.workerId===w.id && r.module===mod && r.daysToExpiry >= 0)).length;
+    const pct = crew.length ? ok / crew.length * 100 : 0;
+    return bar(mod, pct, pct < 80,
+      `${ok} of ${crew.length} currently certified on ${mod}`);
+  }).join('');
+  return `<div class="chartcard">
+      <h3>${name}</h3>
+      <p class="eyebrow" style="margin-top:3px">${code} · ${crew.length} workers</p>
+      <div class="bars">${rows}</div>
+      <p class="thresholdnote">Red below 80% currently certified — the site's own
+         adoption threshold, editable per operator.</p>
+    </div>`;
+}).join('');
+
+/* ------------------------------------------------------------ near-miss */
+/* Grouped by contractor AND module. Averaging a crew across both modules
+   dilutes a per-module finding into nothing — "70% fail gas-zone recognition"
+   is a claim about GAS-01, not about a crew in general, and collapsing it was
+   hiding exactly the signal this view exists to surface. */
+const riskCards = [];
+for (const code of contractors) {
+  const crew = DATA.workers.filter(w => w.contractor === code).map(w => w.id);
+  const name = DATA.workers.find(w => w.contractor === code).contractorName;
+  for (const mod of ['FIRE-01', 'GAS-01']) {
+    const recs = DATA.register.filter(r => crew.includes(r.workerId) && r.module === mod);
+    if (!recs.length) continue;
+    let worst = null;
+    const rows = DATA.competencies.map(c => {
+      const below = recs.filter(r => r.competencies[c] < FLOORS[c]).length;
+      const pct = below / recs.length * 100;
+      if (!worst || pct > worst.pct) worst = { c, pct, below, n: recs.length };
+      return bar(c, pct, pct >= 50,
+        `${below} of ${recs.length} ${mod} attempts below the ${FLOORS[c]} floor for ${c}`);
+    }).join('');
+    riskCards.push({ code, name, mod, rows, worst, n: recs.length });
+  }
+}
+riskCards.sort((a, b) => b.worst.pct - a.worst.pct);   /* worst first — summary before detail */
+
+$('#risk-cards').innerHTML = riskCards.map(k => {
+  const flagged = k.worst.pct >= 50;
+  const flag = flagged
+    ? `<p class="thresholdnote" style="color:var(--crit)"><strong>Flagged.</strong>
+         ${Math.round(k.worst.pct)}% of this crew fails ${k.worst.c} on ${k.mod}
+         (${k.worst.below} of ${k.worst.n}). That is where the next incident happens.</p>`
+    : `<p class="thresholdnote">Highest failure rate is ${k.worst.c} at
+         ${Math.round(k.worst.pct)}% — below the 50% flag.</p>`;
+  return `<div class="chartcard"${flagged ? ' style="border-color:var(--crit)"' : ''}>
+      <h3>${k.name}</h3>
+      <p class="eyebrow" style="margin-top:3px">${k.code} · ${k.mod} · ${k.n} attempts</p>
+      <div class="bars">${k.rows}</div>${flag}</div>`;
+}).join('');
+
+/* --------------------------------------------------------------- replay */
+const rp = DATA.replay;
+$('#replay-sub').textContent =
+  `${rp.workerName} · ${rp.module} · attempt ${rp.attemptId}. Reconstructed from the ` +
+  `signed event log — this is what turns a disputed certificate into an evidence file.`;
+$('#replay').innerHTML = rp.events.map(e => `
+  <div class="ev ${e.kind}">
+    <span class="t">${e.t.toFixed(1)}s</span>
+    <div><span class="l">${e.label}</span>
+      ${e.detail ? `<div class="d">beat ${e.beat} · ${e.detail}</div>`
+                 : `<div class="d">beat ${e.beat}</div>`}</div>
+  </div>`).join('');
+
+/* --------------------------------------------------------------- verify */
+const verdict = $('#verdict');
+const esc = s => String(s).replace(/[&<>"]/g, c =>
+  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+async function runVerify() {
+  const text = $('#qrin').value.trim();
+  if (!text) {
+    verdict.className = 'verdict';
+    verdict.innerHTML = '<div class="big">Ready</div><p class="note">Paste a certificate first.</p>';
+    return;
+  }
+  const r = await verify(text, TRUST);
+  const c = r.credential;
+  const head = `<div class="big">${r.ok ? 'VALID' : 'REJECTED'}</div>
+                <p class="note">${esc(r.reason)}</p>`;
+  let body = '';
+  if (c) {
+    body += `<dl class="kv">
+      <dt>worker</dt><dd>${esc(c.name)}</dd>
+      <dt>employer</dt><dd class="mono">${esc(c.employerCode)}</dd>
+      <dt>module</dt><dd class="mono">${esc(c.module)}</dd>
+      <dt>mode</dt><dd>${modeChip(c.tier)}</dd>
+      <dt>score</dt><dd class="mono">${c.score}</dd>
+      <dt>valid</dt><dd class="mono">${c.notBefore} to ${c.expires}</dd>
+      <dt>attempt</dt><dd class="mono" style="word-break:break-all">${c.attemptDigestHex}</dd>
+    </dl>
+    <div class="compgrid">${Object.entries(c.competencies).map(([k,v]) =>
+      `<div><div class="c">${k}</div><div class="v ${v < (FLOORS[k]||0) ? 'low':''}">${v}</div></div>`
+      ).join('')}</div>`;
+  }
+  const warn = (r.warnings||[]).map(w =>
+    `<p class="note" style="color:var(--warn)">${esc(w)}</p>`).join('');
+  verdict.className = 'verdict ' + (r.ok ? 'ok' : 'bad');
+  verdict.innerHTML = head + warn + body;
+}
+
+$('#btn-verify').addEventListener('click', runVerify);
+document.querySelectorAll('[data-sample]').forEach(b =>
+  b.addEventListener('click', () => {
+    $('#qrin').value = DATA.samples[b.dataset.sample];
+    runVerify();
+  }));
+$('#qrin').value = DATA.samples.valid;
+runVerify();
+
+/* ----------------------------------------------------------------- tabs */
+const tabs = [...document.querySelectorAll('nav.tabs button')];
+tabs.forEach(t => t.addEventListener('click', () => {
+  tabs.forEach(o => {
+    const on = o === t;
+    o.setAttribute('aria-selected', String(on));
+    document.getElementById(o.getAttribute('aria-controls')).hidden = !on;
+  });
+}));
+
+/* -------------------------------------------------------------- tooltip */
+const tip = $('#tip');
+document.addEventListener('pointermove', e => {
+  const host = e.target.closest('[data-tip]');
+  if (!host) { tip.style.opacity = 0; return; }
+  tip.textContent = host.dataset.tip;
+  tip.style.opacity = 1;
+  const pad = 12;
+  tip.style.left = Math.min(e.clientX + pad, innerWidth - tip.offsetWidth - 8) + 'px';
+  tip.style.top = Math.min(e.clientY + pad, innerHeight - tip.offsetHeight - 8) + 'px';
+});
+</script>

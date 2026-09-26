@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Everything the app shows is in i18n/Strings.kt (English and Hindi, with
+         every drill instruction also spoken aloud). Only the launcher name
+         lives here, because Android reads it before the app starts. -->
+    <string name="app_name">Sajag</string>
+</resources>

@@ -1,0 +1,28 @@
+__pycache__/
+*.pyc
+.venv/
+Library/
+Temp/
+obj/
+build/
+*.apk
+*.keystore
+local.properties
+.env
+
+*.class
+jvm-vectors/vectors.tsv
+
+# Android / Gradle
+.gradle/
+.kotlin/
+.idea/
+*.iml
+captures/
+.cxx/
+.externalNativeBuild/
+
+# Unity
+unity/Logs/
+unity/UserSettings/
+unity/Build/

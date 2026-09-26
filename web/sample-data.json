@@ -1,0 +1,1087 @@
+{
+ "generatedOn": "2026-09-13",
+ "issuerPublicKeyHex": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+ "issuerIndex": 7,
+ "competencies": [
+  "HAZ-ID",
+  "EQP-SEL",
+  "SEQ",
+  "EGR",
+  "TECH",
+  "KNW"
+ ],
+ "workers": [
+  {
+   "id": "wkr-1000",
+   "name": "Ramesh Bhagat",
+   "contractor": "CTR-2291",
+   "contractorName": "Jharia Coal Services",
+   "site": "Jharia Block IV",
+   "role": "Loader operator",
+   "daysOnJob": 608
+  },
+  {
+   "id": "wkr-1001",
+   "name": "Sita Hembrom",
+   "contractor": "CTR-3140",
+   "contractorName": "Bokaro Works Pvt Ltd",
+   "site": "Bokaro Steel Plant",
+   "role": "Support crew",
+   "daysOnJob": 810
+  },
+  {
+   "id": "wkr-1002",
+   "name": "Birsa Hembrom",
+   "contractor": "CTR-5522",
+   "contractorName": "Koderma Mica Labour Co-op",
+   "site": "Koderma Mica Unit 2",
+   "role": "Conveyor attendant",
+   "daysOnJob": 318
+  },
+  {
+   "id": "wkr-1003",
+   "name": "Mangal Singh",
+   "contractor": "CTR-2291",
+   "contractorName": "Jharia Coal Services",
+   "site": "Jharia Block IV",
+   "role": "Sump crew",
+   "daysOnJob": 685
+  },
+  {
+   "id": "wkr-1004",
+   "name": "Anil Hembrom",
+   "contractor": "CTR-3140",
+   "contractorName": "Bokaro Works Pvt Ltd",
+   "site": "Bokaro Steel Plant",
+   "role": "Trainee",
+   "daysOnJob": 372
+  },
+  {
+   "id": "wkr-1005",
+   "name": "Sunita Hembrom",
+   "contractor": "CTR-5522",
+   "contractorName": "Koderma Mica Labour Co-op",
+   "site": "Koderma Mica Unit 2",
+   "role": "Loader operator",
+   "daysOnJob": 518
+  },
+  {
+   "id": "wkr-1006",
+   "name": "Dilip Oraon",
+   "contractor": "CTR-2291",
+   "contractorName": "Jharia Coal Services",
+   "site": "Jharia Block IV",
+   "role": "Support crew",
+   "daysOnJob": 521
+  },
+  {
+   "id": "wkr-1007",
+   "name": "Phulmani Tudu",
+   "contractor": "CTR-3140",
+   "contractorName": "Bokaro Works Pvt Ltd",
+   "site": "Bokaro Steel Plant",
+   "role": "Conveyor attendant",
+   "daysOnJob": 405
+  },
+  {
+   "id": "wkr-1008",
+   "name": "Karan Mahato",
+   "contractor": "CTR-5522",
+   "contractorName": "Koderma Mica Labour Co-op",
+   "site": "Koderma Mica Unit 2",
+   "role": "Sump crew",
+   "daysOnJob": 569
+  },
+  {
+   "id": "wkr-1009",
+   "name": "Budhan Mahato",
+   "contractor": "CTR-2291",
+   "contractorName": "Jharia Coal Services",
+   "site": "Jharia Block IV",
+   "role": "Trainee",
+   "daysOnJob": 893
+  },
+  {
+   "id": "wkr-1010",
+   "name": "Rekha Tudu",
+   "contractor": "CTR-3140",
+   "contractorName": "Bokaro Works Pvt Ltd",
+   "site": "Bokaro Steel Plant",
+   "role": "Loader operator",
+   "daysOnJob": 735
+  },
+  {
+   "id": "wkr-1011",
+   "name": "Shyam Hembrom",
+   "contractor": "CTR-5522",
+   "contractorName": "Koderma Mica Labour Co-op",
+   "site": "Koderma Mica Unit 2",
+   "role": "Support crew",
+   "daysOnJob": 182
+  },
+  {
+   "id": "wkr-1012",
+   "name": "Jitu Mahato",
+   "contractor": "CTR-2291",
+   "contractorName": "Jharia Coal Services",
+   "site": "Jharia Block IV",
+   "role": "Conveyor attendant",
+   "daysOnJob": 485
+  },
+  {
+   "id": "wkr-1013",
+   "name": "Somra Oraon",
+   "contractor": "CTR-3140",
+   "contractorName": "Bokaro Works Pvt Ltd",
+   "site": "Bokaro Steel Plant",
+   "role": "Sump crew",
+   "daysOnJob": 553
+  },
+  {
+   "id": "wkr-1014",
+   "name": "Basanti Bhagat",
+   "contractor": "CTR-5522",
+   "contractorName": "Koderma Mica Labour Co-op",
+   "site": "Koderma Mica Unit 2",
+   "role": "Trainee",
+   "daysOnJob": 785
+  },
+  {
+   "id": "wkr-1015",
+   "name": "Ajay Mahato",
+   "contractor": "CTR-2291",
+   "contractorName": "Jharia Coal Services",
+   "site": "Jharia Block IV",
+   "role": "Loader operator",
+   "daysOnJob": 421
+  },
+  {
+   "id": "wkr-1016",
+   "name": "Mukesh Munda",
+   "contractor": "CTR-3140",
+   "contractorName": "Bokaro Works Pvt Ltd",
+   "site": "Bokaro Steel Plant",
+   "role": "Support crew",
+   "daysOnJob": 567
+  },
+  {
+   "id": "wkr-1017",
+   "name": "Lakhan Kumar",
+   "contractor": "CTR-5522",
+   "contractorName": "Koderma Mica Labour Co-op",
+   "site": "Koderma Mica Unit 2",
+   "role": "Conveyor attendant",
+   "daysOnJob": 828
+  },
+  {
+   "id": "wkr-1018",
+   "name": "Champa Oraon",
+   "contractor": "CTR-2291",
+   "contractorName": "Jharia Coal Services",
+   "site": "Jharia Block IV",
+   "role": "Sump crew",
+   "daysOnJob": 512
+  },
+  {
+   "id": "wkr-1019",
+   "name": "Ravi Mahato",
+   "contractor": "CTR-3140",
+   "contractorName": "Bokaro Works Pvt Ltd",
+   "site": "Bokaro Steel Plant",
+   "role": "Trainee",
+   "daysOnJob": 504
+  },
+  {
+   "id": "wkr-1020",
+   "name": "Sanjay Hembrom",
+   "contractor": "CTR-5522",
+   "contractorName": "Koderma Mica Labour Co-op",
+   "site": "Koderma Mica Unit 2",
+   "role": "Loader operator",
+   "daysOnJob": 727
+  },
+  {
+   "id": "wkr-1021",
+   "name": "Kunti Kumar",
+   "contractor": "CTR-2291",
+   "contractorName": "Jharia Coal Services",
+   "site": "Jharia Block IV",
+   "role": "Support crew",
+   "daysOnJob": 533
+  },
+  {
+   "id": "wkr-1022",
+   "name": "Bhola Murmu",
+   "contractor": "CTR-3140",
+   "contractorName": "Bokaro Works Pvt Ltd",
+   "site": "Bokaro Steel Plant",
+   "role": "Conveyor attendant",
+   "daysOnJob": 139
+  },
+  {
+   "id": "wkr-1023",
+   "name": "Devi Tudu",
+   "contractor": "CTR-5522",
+   "contractorName": "Koderma Mica Labour Co-op",
+   "site": "Koderma Mica Unit 2",
+   "role": "Sump crew",
+   "daysOnJob": 522
+  }
+ ],
+ "register": [
+  {
+   "workerId": "wkr-1000",
+   "module": "FIRE-01",
+   "tier": 1,
+   "score": 91,
+   "competencies": {
+    "HAZ-ID": 78,
+    "EQP-SEL": 100,
+    "SEQ": 97,
+    "EGR": 89,
+    "TECH": 100,
+    "KNW": 81
+   },
+   "certifiedOn": "2026-05-06",
+   "expires": "2027-05-06",
+   "daysToExpiry": 235,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1000",
+   "module": "GAS-01",
+   "tier": 3,
+   "score": 85,
+   "competencies": {
+    "HAZ-ID": 84,
+    "EQP-SEL": 100,
+    "SEQ": 74,
+    "EGR": 64,
+    "TECH": 91,
+    "KNW": 99
+   },
+   "certifiedOn": "2025-08-03",
+   "expires": "2026-08-03",
+   "daysToExpiry": -41,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1001",
+   "module": "FIRE-01",
+   "tier": 1,
+   "score": 84,
+   "competencies": {
+    "HAZ-ID": 77,
+    "EQP-SEL": 100,
+    "SEQ": 75,
+    "EGR": 86,
+    "TECH": 80,
+    "KNW": 87
+   },
+   "certifiedOn": "2025-11-13",
+   "expires": "2026-11-13",
+   "daysToExpiry": 61,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1002",
+   "module": "FIRE-01",
+   "tier": 2,
+   "score": 79,
+   "competencies": {
+    "HAZ-ID": 73,
+    "EQP-SEL": 100,
+    "SEQ": 70,
+    "EGR": 69,
+    "TECH": 92,
+    "KNW": 69
+   },
+   "certifiedOn": "2025-10-17",
+   "expires": "2026-10-17",
+   "daysToExpiry": 34,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1002",
+   "module": "GAS-01",
+   "tier": 1,
+   "score": 77,
+   "competencies": {
+    "HAZ-ID": 80,
+    "EQP-SEL": 100,
+    "SEQ": 62,
+    "EGR": 60,
+    "TECH": 88,
+    "KNW": 71
+   },
+   "certifiedOn": "2025-12-19",
+   "expires": "2026-12-19",
+   "daysToExpiry": 97,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1003",
+   "module": "FIRE-01",
+   "tier": 1,
+   "score": 89,
+   "competencies": {
+    "HAZ-ID": 94,
+    "EQP-SEL": 100,
+    "SEQ": 98,
+    "EGR": 84,
+    "TECH": 83,
+    "KNW": 77
+   },
+   "certifiedOn": "2025-11-18",
+   "expires": "2026-11-18",
+   "daysToExpiry": 66,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1003",
+   "module": "GAS-01",
+   "tier": 2,
+   "score": 92,
+   "competencies": {
+    "HAZ-ID": 96,
+    "EQP-SEL": 100,
+    "SEQ": 98,
+    "EGR": 71,
+    "TECH": 100,
+    "KNW": 87
+   },
+   "certifiedOn": "2025-12-06",
+   "expires": "2026-12-06",
+   "daysToExpiry": 84,
+   "trainer": "VTC/JH/0447",
+   "coSigned": false
+  },
+  {
+   "workerId": "wkr-1004",
+   "module": "FIRE-01",
+   "tier": 1,
+   "score": 88,
+   "competencies": {
+    "HAZ-ID": 81,
+    "EQP-SEL": 100,
+    "SEQ": 77,
+    "EGR": 82,
+    "TECH": 92,
+    "KNW": 93
+   },
+   "certifiedOn": "2026-08-10",
+   "expires": "2027-08-10",
+   "daysToExpiry": 331,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1004",
+   "module": "GAS-01",
+   "tier": 2,
+   "score": 91,
+   "competencies": {
+    "HAZ-ID": 98,
+    "EQP-SEL": 100,
+    "SEQ": 75,
+    "EGR": 73,
+    "TECH": 98,
+    "KNW": 100
+   },
+   "certifiedOn": "2026-06-16",
+   "expires": "2027-06-16",
+   "daysToExpiry": 276,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1005",
+   "module": "FIRE-01",
+   "tier": 2,
+   "score": 84,
+   "competencies": {
+    "HAZ-ID": 73,
+    "EQP-SEL": 100,
+    "SEQ": 75,
+    "EGR": 63,
+    "TECH": 91,
+    "KNW": 100
+   },
+   "certifiedOn": "2026-08-24",
+   "expires": "2027-08-24",
+   "daysToExpiry": 345,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1006",
+   "module": "FIRE-01",
+   "tier": 2,
+   "score": 85,
+   "competencies": {
+    "HAZ-ID": 70,
+    "EQP-SEL": 100,
+    "SEQ": 84,
+    "EGR": 93,
+    "TECH": 91,
+    "KNW": 71
+   },
+   "certifiedOn": "2026-06-17",
+   "expires": "2027-06-17",
+   "daysToExpiry": 277,
+   "trainer": "VTC/JH/0447",
+   "coSigned": false
+  },
+  {
+   "workerId": "wkr-1006",
+   "module": "GAS-01",
+   "tier": 2,
+   "score": 86,
+   "competencies": {
+    "HAZ-ID": 90,
+    "EQP-SEL": 100,
+    "SEQ": 55,
+    "EGR": 84,
+    "TECH": 96,
+    "KNW": 88
+   },
+   "certifiedOn": "2025-10-02",
+   "expires": "2026-10-02",
+   "daysToExpiry": 19,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1007",
+   "module": "FIRE-01",
+   "tier": 3,
+   "score": 93,
+   "competencies": {
+    "HAZ-ID": 85,
+    "EQP-SEL": 100,
+    "SEQ": 100,
+    "EGR": 78,
+    "TECH": 100,
+    "KNW": 96
+   },
+   "certifiedOn": "2026-02-12",
+   "expires": "2027-02-12",
+   "daysToExpiry": 152,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1007",
+   "module": "GAS-01",
+   "tier": 2,
+   "score": 84,
+   "competencies": {
+    "HAZ-ID": 79,
+    "EQP-SEL": 100,
+    "SEQ": 79,
+    "EGR": 72,
+    "TECH": 90,
+    "KNW": 85
+   },
+   "certifiedOn": "2026-04-23",
+   "expires": "2027-04-23",
+   "daysToExpiry": 222,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1008",
+   "module": "FIRE-01",
+   "tier": 1,
+   "score": 88,
+   "competencies": {
+    "HAZ-ID": 90,
+    "EQP-SEL": 100,
+    "SEQ": 80,
+    "EGR": 83,
+    "TECH": 89,
+    "KNW": 86
+   },
+   "certifiedOn": "2025-09-15",
+   "expires": "2026-09-15",
+   "daysToExpiry": 2,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1008",
+   "module": "GAS-01",
+   "tier": 2,
+   "score": 90,
+   "competencies": {
+    "HAZ-ID": 100,
+    "EQP-SEL": 100,
+    "SEQ": 92,
+    "EGR": 90,
+    "TECH": 84,
+    "KNW": 77
+   },
+   "certifiedOn": "2026-06-22",
+   "expires": "2027-06-22",
+   "daysToExpiry": 282,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1009",
+   "module": "FIRE-01",
+   "tier": 2,
+   "score": 84,
+   "competencies": {
+    "HAZ-ID": 85,
+    "EQP-SEL": 100,
+    "SEQ": 100,
+    "EGR": 71,
+    "TECH": 80,
+    "KNW": 65
+   },
+   "certifiedOn": "2026-06-21",
+   "expires": "2027-06-21",
+   "daysToExpiry": 281,
+   "trainer": "VTC/JH/0447",
+   "coSigned": false
+  },
+  {
+   "workerId": "wkr-1009",
+   "module": "GAS-01",
+   "tier": 2,
+   "score": 72,
+   "competencies": {
+    "HAZ-ID": 100,
+    "EQP-SEL": 32,
+    "SEQ": 68,
+    "EGR": 74,
+    "TECH": 93,
+    "KNW": 67
+   },
+   "certifiedOn": "2025-09-14",
+   "expires": "2026-09-14",
+   "daysToExpiry": 1,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1010",
+   "module": "FIRE-01",
+   "tier": 2,
+   "score": 86,
+   "competencies": {
+    "HAZ-ID": 94,
+    "EQP-SEL": 100,
+    "SEQ": 61,
+    "EGR": 89,
+    "TECH": 85,
+    "KNW": 88
+   },
+   "certifiedOn": "2025-12-25",
+   "expires": "2026-12-25",
+   "daysToExpiry": 103,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1010",
+   "module": "GAS-01",
+   "tier": 2,
+   "score": 86,
+   "competencies": {
+    "HAZ-ID": 86,
+    "EQP-SEL": 100,
+    "SEQ": 87,
+    "EGR": 77,
+    "TECH": 73,
+    "KNW": 91
+   },
+   "certifiedOn": "2025-09-23",
+   "expires": "2026-09-23",
+   "daysToExpiry": 10,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1011",
+   "module": "FIRE-01",
+   "tier": 1,
+   "score": 80,
+   "competencies": {
+    "HAZ-ID": 73,
+    "EQP-SEL": 100,
+    "SEQ": 84,
+    "EGR": 74,
+    "TECH": 78,
+    "KNW": 73
+   },
+   "certifiedOn": "2026-07-29",
+   "expires": "2027-07-29",
+   "daysToExpiry": 319,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1011",
+   "module": "GAS-01",
+   "tier": 3,
+   "score": 86,
+   "competencies": {
+    "HAZ-ID": 55,
+    "EQP-SEL": 100,
+    "SEQ": 93,
+    "EGR": 100,
+    "TECH": 81,
+    "KNW": 87
+   },
+   "certifiedOn": "2025-10-26",
+   "expires": "2026-10-26",
+   "daysToExpiry": 43,
+   "trainer": "VTC/JH/0447",
+   "coSigned": false
+  },
+  {
+   "workerId": "wkr-1012",
+   "module": "FIRE-01",
+   "tier": 2,
+   "score": 85,
+   "competencies": {
+    "HAZ-ID": 87,
+    "EQP-SEL": 100,
+    "SEQ": 75,
+    "EGR": 99,
+    "TECH": 74,
+    "KNW": 75
+   },
+   "certifiedOn": "2026-02-24",
+   "expires": "2027-02-24",
+   "daysToExpiry": 164,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1013",
+   "module": "FIRE-01",
+   "tier": 2,
+   "score": 88,
+   "competencies": {
+    "HAZ-ID": 94,
+    "EQP-SEL": 100,
+    "SEQ": 63,
+    "EGR": 94,
+    "TECH": 100,
+    "KNW": 77
+   },
+   "certifiedOn": "2025-11-03",
+   "expires": "2026-11-03",
+   "daysToExpiry": 51,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1013",
+   "module": "GAS-01",
+   "tier": 2,
+   "score": 92,
+   "competencies": {
+    "HAZ-ID": 88,
+    "EQP-SEL": 100,
+    "SEQ": 100,
+    "EGR": 89,
+    "TECH": 91,
+    "KNW": 83
+   },
+   "certifiedOn": "2025-11-10",
+   "expires": "2026-11-10",
+   "daysToExpiry": 58,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1014",
+   "module": "FIRE-01",
+   "tier": 1,
+   "score": 79,
+   "competencies": {
+    "HAZ-ID": 78,
+    "EQP-SEL": 55,
+    "SEQ": 86,
+    "EGR": 88,
+    "TECH": 83,
+    "KNW": 82
+   },
+   "certifiedOn": "2025-09-28",
+   "expires": "2026-09-28",
+   "daysToExpiry": 15,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1014",
+   "module": "GAS-01",
+   "tier": 3,
+   "score": 68,
+   "competencies": {
+    "HAZ-ID": 44,
+    "EQP-SEL": 19,
+    "SEQ": 72,
+    "EGR": 93,
+    "TECH": 85,
+    "KNW": 98
+   },
+   "certifiedOn": "2026-03-23",
+   "expires": "2027-03-23",
+   "daysToExpiry": 191,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1015",
+   "module": "FIRE-01",
+   "tier": 2,
+   "score": 82,
+   "competencies": {
+    "HAZ-ID": 74,
+    "EQP-SEL": 100,
+    "SEQ": 88,
+    "EGR": 63,
+    "TECH": 95,
+    "KNW": 73
+   },
+   "certifiedOn": "2025-10-13",
+   "expires": "2026-10-13",
+   "daysToExpiry": 30,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1015",
+   "module": "GAS-01",
+   "tier": 1,
+   "score": 94,
+   "competencies": {
+    "HAZ-ID": 100,
+    "EQP-SEL": 100,
+    "SEQ": 100,
+    "EGR": 89,
+    "TECH": 100,
+    "KNW": 76
+   },
+   "certifiedOn": "2026-02-08",
+   "expires": "2027-02-08",
+   "daysToExpiry": 148,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1017",
+   "module": "FIRE-01",
+   "tier": 2,
+   "score": 90,
+   "competencies": {
+    "HAZ-ID": 88,
+    "EQP-SEL": 100,
+    "SEQ": 87,
+    "EGR": 80,
+    "TECH": 88,
+    "KNW": 100
+   },
+   "certifiedOn": "2025-11-08",
+   "expires": "2026-11-08",
+   "daysToExpiry": 56,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1017",
+   "module": "GAS-01",
+   "tier": 1,
+   "score": 69,
+   "competencies": {
+    "HAZ-ID": 34,
+    "EQP-SEL": 58,
+    "SEQ": 69,
+    "EGR": 74,
+    "TECH": 94,
+    "KNW": 86
+   },
+   "certifiedOn": "2025-07-28",
+   "expires": "2026-07-28",
+   "daysToExpiry": -47,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1018",
+   "module": "GAS-01",
+   "tier": 3,
+   "score": 88,
+   "competencies": {
+    "HAZ-ID": 100,
+    "EQP-SEL": 100,
+    "SEQ": 74,
+    "EGR": 99,
+    "TECH": 79,
+    "KNW": 79
+   },
+   "certifiedOn": "2026-05-23",
+   "expires": "2027-05-23",
+   "daysToExpiry": 252,
+   "trainer": "VTC/JH/0447",
+   "coSigned": false
+  },
+  {
+   "workerId": "wkr-1019",
+   "module": "GAS-01",
+   "tier": 2,
+   "score": 82,
+   "competencies": {
+    "HAZ-ID": 77,
+    "EQP-SEL": 100,
+    "SEQ": 83,
+    "EGR": 77,
+    "TECH": 74,
+    "KNW": 79
+   },
+   "certifiedOn": "2025-12-25",
+   "expires": "2026-12-25",
+   "daysToExpiry": 103,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1020",
+   "module": "FIRE-01",
+   "tier": 3,
+   "score": 82,
+   "competencies": {
+    "HAZ-ID": 66,
+    "EQP-SEL": 100,
+    "SEQ": 82,
+    "EGR": 87,
+    "TECH": 85,
+    "KNW": 72
+   },
+   "certifiedOn": "2026-02-18",
+   "expires": "2027-02-18",
+   "daysToExpiry": 158,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1020",
+   "module": "GAS-01",
+   "tier": 1,
+   "score": 91,
+   "competencies": {
+    "HAZ-ID": 82,
+    "EQP-SEL": 100,
+    "SEQ": 87,
+    "EGR": 97,
+    "TECH": 86,
+    "KNW": 93
+   },
+   "certifiedOn": "2026-02-24",
+   "expires": "2027-02-24",
+   "daysToExpiry": 164,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1021",
+   "module": "FIRE-01",
+   "tier": 2,
+   "score": 88,
+   "competencies": {
+    "HAZ-ID": 97,
+    "EQP-SEL": 100,
+    "SEQ": 88,
+    "EGR": 69,
+    "TECH": 72,
+    "KNW": 100
+   },
+   "certifiedOn": "2026-05-30",
+   "expires": "2027-05-30",
+   "daysToExpiry": 259,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1021",
+   "module": "GAS-01",
+   "tier": 1,
+   "score": 84,
+   "competencies": {
+    "HAZ-ID": 78,
+    "EQP-SEL": 100,
+    "SEQ": 84,
+    "EGR": 68,
+    "TECH": 81,
+    "KNW": 94
+   },
+   "certifiedOn": "2026-08-28",
+   "expires": "2027-08-28",
+   "daysToExpiry": 349,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1022",
+   "module": "FIRE-01",
+   "tier": 1,
+   "score": 86,
+   "competencies": {
+    "HAZ-ID": 85,
+    "EQP-SEL": 100,
+    "SEQ": 90,
+    "EGR": 67,
+    "TECH": 88,
+    "KNW": 87
+   },
+   "certifiedOn": "2026-07-23",
+   "expires": "2027-07-23",
+   "daysToExpiry": 313,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1022",
+   "module": "GAS-01",
+   "tier": 1,
+   "score": 84,
+   "competencies": {
+    "HAZ-ID": 68,
+    "EQP-SEL": 100,
+    "SEQ": 76,
+    "EGR": 89,
+    "TECH": 86,
+    "KNW": 83
+   },
+   "certifiedOn": "2026-04-26",
+   "expires": "2027-04-26",
+   "daysToExpiry": 225,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1023",
+   "module": "FIRE-01",
+   "tier": 2,
+   "score": 71,
+   "competencies": {
+    "HAZ-ID": 90,
+    "EQP-SEL": 8,
+    "SEQ": 71,
+    "EGR": 79,
+    "TECH": 83,
+    "KNW": 94
+   },
+   "certifiedOn": "2026-03-23",
+   "expires": "2027-03-23",
+   "daysToExpiry": 191,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  },
+  {
+   "workerId": "wkr-1023",
+   "module": "GAS-01",
+   "tier": 1,
+   "score": 70,
+   "competencies": {
+    "HAZ-ID": 58,
+    "EQP-SEL": 48,
+    "SEQ": 75,
+    "EGR": 75,
+    "TECH": 78,
+    "KNW": 87
+   },
+   "certifiedOn": "2026-07-26",
+   "expires": "2027-07-26",
+   "daysToExpiry": 316,
+   "trainer": "VTC/JH/0447",
+   "coSigned": true
+  }
+ ],
+ "samples": {
+  "valid": "SJG1:630%5017A3UHU4KDQ3J6TV6NUB52EN39DTIAF$DOQEN34 8D53DAWE1N8MHAPF6GA7100P33/*82VCODBQCAXDS+GRK40ZAVL-NATA/Q9RSAJ73NT1RE1X10$%JY1T QDRD4YLRCDJ%YFIQN1ONN+NJC6JVOR0W4SVFRQ4*EMUA VAKQFV/7R9CS4ES056GMYAMMJK5Z7WV6.TSGHFFHE30",
+  "tier3Provisional": "SJG1:630%50W7A6.SQ$N.XLM-SSRI$F7DNLJ20J7A0%EB$D5/D-34$$E-$E1N8MHAAL6+Q6300R335+85VC/+9-7CK.L+9HBRD 88UA2OM94$H886I73VNNYC1-50/ 0H98SXO:NG1YLY.5 YCTUNZY3OWN%R07L7Y9SJ8O$KGJ1L$3P.BQTO1GDK0JJ /8P PRTMI+PKVT:-LR2NFIS3%HUIGC0",
+  "expired": "SJG1:630%50Z7AB5UQNIDVGR*A723+SAK2EDXR H84LEOCC%69C$D0LEI$D1N8MHAVW6PF6200D33%*8KUCQY8EY8R%FZZB553/+NUU4 ZNAADWFIG73PYMB11T40SIJUXLH:1B*V*32 CGVTU08QBW3$/C.PF5VMEV3SOKA/S MSOMN3F52KJ.DAXJRC-H4JJT2I33K15CT9JG:UDT1+$R.KU90",
+  "tampered": "SJG1:630%5017A3UHU4KDQ3J6TV6NUB52EN49DTIAF$DOQEN34 8D53DAWE1N8MHAPF6GA7100P33/*82VCODBQCAXDS+GRK40ZAVL-NATA/Q9RSAJ73NT1RE1X10$%JY1T QDRD4YLRCDJ%YFIQN1ONN+NJC6JVOR0W4SVFRQ4*EMUA VAKQFV/7R9CS4ES056GMYAMMJK5Z7WV6.TSGHFFHE30"
+ },
+ "replay": {
+  "workerId": "wkr-1000",
+  "workerName": "Ramesh Bhagat",
+  "module": "FIRE-01",
+  "attemptId": "att-01JD8Q4M2",
+  "events": [
+   {
+    "t": 0,
+    "beat": "1.1",
+    "label": "Scene ready, control handed over",
+    "kind": "stage"
+   },
+   {
+    "t": 4.2,
+    "beat": "1.1",
+    "label": "Classified fire as electrical",
+    "kind": "ok",
+    "detail": "4.2 s"
+   },
+   {
+    "t": 6.8,
+    "beat": "1.1",
+    "label": "Standoff 3.1 m",
+    "kind": "ok",
+    "detail": "within 1.5–6.0 m"
+   },
+   {
+    "t": 11.4,
+    "beat": "1.2",
+    "label": "Reached for WATER extinguisher",
+    "kind": "fail",
+    "detail": "hard fail — WATER_ON_ELECTRICAL"
+   },
+   {
+    "t": 11.4,
+    "beat": "1.2",
+    "label": "Certification blocked, beat replayed",
+    "kind": "stage"
+   },
+   {
+    "t": 38.9,
+    "beat": "1.2",
+    "label": "Selected CO₂ on replay",
+    "kind": "ok",
+    "detail": "gauge checked"
+   },
+   {
+    "t": 52.1,
+    "beat": "1.3",
+    "label": "Aim 9° from base, sweep 82%",
+    "kind": "ok",
+    "detail": "target 70%"
+   },
+   {
+    "t": 71.6,
+    "beat": "1.4",
+    "label": "Exit north, wall contact 88%",
+    "kind": "ok",
+    "detail": "head 0.9 m"
+   },
+   {
+    "t": 96.3,
+    "beat": "1.5",
+    "label": "Response order correct",
+    "kind": "ok",
+    "detail": "alarm at 7.4 s"
+   }
+  ]
+ }
+}

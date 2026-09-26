@@ -1,0 +1,396 @@
+{
+  "id": "FIRE-01",
+  "title": {
+    "en": "Fire & Explosion Response",
+    "hi": "आग और विस्फोट प्रतिक्रिया",
+    "sat": "__AWAITING_NATIVE_SPEAKER__"
+  },
+  "setting": "Conveyor gallery, coal handling plant",
+  "estimated_minutes": 9,
+  "asset_pack": "packs/fire-01",
+  "asset_budget_mb": 28,
+  "tier_calibration": {
+    "1": 1.0,
+    "2": 1.25,
+    "3": 1.6
+  },
+  "_calibration_note": "Timing thresholds are multiplied by these factors. A Tier 3 worker tapping a 2D plate cannot match a Tier 1 worker turning his body, so the clock differs — the pass bar does not. Values are placeholders until the October pilot replaces them with measured medians.",
+  "hard_fails": [
+    "WATER_ON_ELECTRICAL",
+    "APPROACH_ENERGISED_PANEL",
+    "UPRIGHT_IN_SMOKE",
+    "OPENED_HOT_DOOR",
+    "EXIT_PAST_SEAT_OF_FIRE"
+  ],
+  "beats": [
+    {
+      "id": "1.1",
+      "title": "Read the fire before you touch anything",
+      "teaches": "Classify before acting. An energised electrical fire is not a Class A fire.",
+      "anchors": {
+        "t1": "vertical_plane",
+        "t2": "marker:switchgear",
+        "t3": "plate:gallery_01"
+      },
+      "rubric": [
+        {
+          "id": "fire-class",
+          "kind": "choice",
+          "competency": "HAZ-ID",
+          "weight": 2,
+          "params": {
+            "required": [
+              "electrical"
+            ],
+            "forbidden": [
+              "class_a",
+              "class_b"
+            ]
+          }
+        },
+        {
+          "id": "classify-latency",
+          "kind": "latency",
+          "competency": "HAZ-ID",
+          "weight": 1,
+          "params": {
+            "good_ms": 6000,
+            "bad_ms": 20000
+          }
+        },
+        {
+          "id": "safe-standoff",
+          "kind": "range",
+          "competency": "EGR",
+          "weight": 1,
+          "params": {
+            "min": 1.5,
+            "max": 6.0,
+            "zero_at": 1.5,
+            "unit": "m"
+          }
+        }
+      ],
+      "staging": [
+        {
+          "at": 0.0,
+          "cue": "vignette",
+          "for": 0.6,
+          "ease": "quintOut"
+        },
+        {
+          "at": 0.2,
+          "cue": "ignite",
+          "for": 0.9,
+          "ease": "expoIn"
+        },
+        {
+          "at": 0.9,
+          "cue": "light-on",
+          "for": 0.6,
+          "ease": "expoOut"
+        },
+        {
+          "at": 1.5,
+          "cue": "label:panel",
+          "for": 0.3,
+          "ease": "quintOut"
+        },
+        {
+          "at": 2.1,
+          "cue": "hand-over"
+        }
+      ]
+    },
+    {
+      "id": "1.2",
+      "title": "Select the right cylinder from a rack of four",
+      "teaches": "Water and foam conduct. On an energised panel the answer is CO2 or dry chemical powder.",
+      "anchors": {
+        "t1": "horizontal_plane",
+        "t2": "marker:extinguisher_rack",
+        "t3": "plate:rack_01"
+      },
+      "rubric": [
+        {
+          "id": "ext-choice",
+          "kind": "choice",
+          "competency": "EQP-SEL",
+          "weight": 3,
+          "params": {
+            "required": [
+              "co2"
+            ],
+            "forbidden": [
+              "water",
+              "foam"
+            ]
+          }
+        },
+        {
+          "id": "gauge-check",
+          "kind": "flag",
+          "competency": "EQP-SEL",
+          "weight": 1,
+          "params": {
+            "expect": true
+          }
+        },
+        {
+          "id": "select-latency",
+          "kind": "latency",
+          "competency": "TECH",
+          "weight": 1,
+          "params": {
+            "good_ms": 5000,
+            "bad_ms": 18000
+          }
+        }
+      ],
+      "staging": [
+        {
+          "at": 0.0,
+          "cue": "rack-in",
+          "for": 0.55,
+          "ease": "weighted"
+        },
+        {
+          "at": 0.09,
+          "cue": "cyl:0",
+          "for": 0.55,
+          "ease": "weighted"
+        },
+        {
+          "at": 0.18,
+          "cue": "cyl:1",
+          "for": 0.55,
+          "ease": "weighted"
+        },
+        {
+          "at": 0.27,
+          "cue": "cyl:2",
+          "for": 0.55,
+          "ease": "weighted"
+        },
+        {
+          "at": 0.36,
+          "cue": "cyl:3",
+          "for": 0.55,
+          "ease": "weighted"
+        },
+        {
+          "at": 1.1,
+          "cue": "hand-over"
+        }
+      ]
+    },
+    {
+      "id": "1.3",
+      "title": "P-A-S-S, measured from the device pose",
+      "teaches": "Aim at the base of the fire, not the flames. Sweep across it. Hold your distance.",
+      "anchors": {
+        "t1": "anchor:fire_seat",
+        "t2": "marker:switchgear",
+        "t3": "plate:fire_01"
+      },
+      "rubric": [
+        {
+          "id": "pass-sequence",
+          "kind": "sequence",
+          "competency": "SEQ",
+          "weight": 2,
+          "params": {
+            "order": [
+              "pull",
+              "aim",
+              "squeeze",
+              "sweep"
+            ]
+          }
+        },
+        {
+          "id": "aim-angle",
+          "kind": "range",
+          "competency": "TECH",
+          "weight": 2,
+          "params": {
+            "min": 0,
+            "max": 15,
+            "zero_at": 30,
+            "unit": "deg from base"
+          }
+        },
+        {
+          "id": "sweep-coverage",
+          "kind": "fraction",
+          "competency": "TECH",
+          "weight": 2,
+          "params": {
+            "target": 0.7
+          }
+        },
+        {
+          "id": "standoff",
+          "kind": "range",
+          "competency": "TECH",
+          "weight": 1,
+          "params": {
+            "min": 2.0,
+            "max": 3.0,
+            "zero_at": 2.0,
+            "unit": "m"
+          }
+        }
+      ]
+    },
+    {
+      "id": "1.4",
+      "title": "Egress into zero visibility, by wall-following and sound",
+      "teaches": "When you cannot see, keep one hand on the wall, stay low, and follow it one way.",
+      "anchors": {
+        "t1": "plane_mesh",
+        "t2": "marker:exit_sign",
+        "t3": "plate:corridor_dark"
+      },
+      "rubric": [
+        {
+          "id": "exit-choice",
+          "kind": "choice",
+          "competency": "EGR",
+          "weight": 3,
+          "params": {
+            "required": [
+              "exit_north"
+            ],
+            "forbidden": [
+              "exit_past_fire"
+            ]
+          }
+        },
+        {
+          "id": "wall-contact",
+          "kind": "fraction",
+          "competency": "EGR",
+          "weight": 2,
+          "params": {
+            "target": 0.8
+          }
+        },
+        {
+          "id": "head-height",
+          "kind": "range",
+          "competency": "EGR",
+          "weight": 1,
+          "params": {
+            "min": 0.4,
+            "max": 1.2,
+            "zero_at": 0.6,
+            "unit": "m"
+          }
+        },
+        {
+          "id": "door-heat-check",
+          "kind": "flag",
+          "competency": "HAZ-ID",
+          "weight": 2,
+          "params": {
+            "expect": true
+          }
+        },
+        {
+          "id": "egress-latency",
+          "kind": "latency",
+          "competency": "EGR",
+          "weight": 1,
+          "params": {
+            "good_ms": 25000,
+            "bad_ms": 70000
+          }
+        }
+      ],
+      "staging": [
+        {
+          "at": 0.0,
+          "cue": "smoke-fall",
+          "for": 2.4,
+          "ease": "linear"
+        },
+        {
+          "at": 1.2,
+          "cue": "grain-up",
+          "for": 1.8,
+          "ease": "quintOut"
+        },
+        {
+          "at": 1.8,
+          "cue": "blackout",
+          "for": 2.6,
+          "ease": "expoIn"
+        },
+        {
+          "at": 2.0,
+          "cue": "audio:exit-cue",
+          "for": 0.0
+        },
+        {
+          "at": 2.4,
+          "cue": "hand-over"
+        }
+      ]
+    },
+    {
+      "id": "1.5",
+      "title": "Sequence the response, not just survive it",
+      "teaches": "Alarm, trip the conveyor, alert your buddy, assembly point, report for the headcount.",
+      "anchors": {
+        "t1": "hud",
+        "t2": "hud",
+        "t3": "hud"
+      },
+      "rubric": [
+        {
+          "id": "response-order",
+          "kind": "sequence",
+          "competency": "SEQ",
+          "weight": 3,
+          "params": {
+            "order": [
+              "alarm",
+              "trip_conveyor",
+              "alert_buddy",
+              "assembly_point",
+              "report_headcount"
+            ]
+          }
+        },
+        {
+          "id": "alarm-latency",
+          "kind": "latency",
+          "competency": "SEQ",
+          "weight": 2,
+          "params": {
+            "good_ms": 10000,
+            "bad_ms": 30000
+          }
+        },
+        {
+          "id": "written-check",
+          "kind": "choice",
+          "competency": "KNW",
+          "weight": 1,
+          "params": {
+            "required": [
+              "q1_b",
+              "q2_a",
+              "q3_c",
+              "q4_a",
+              "q5_b",
+              "q6_c"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "_staging_note": "Staging drives the SAME beat the rubric scores, from the same file. 'hand-over' starts the worker's clock — timing rubrics measure from there, not from beat start, so our reveal pacing never counts as his hesitation. Only one attention-seeking cue may be live at a time; Choreographer warns at load if two overlap."
+}

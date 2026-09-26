@@ -1,0 +1,315 @@
+{
+  "id": "GAS-01",
+  "title": {
+    "en": "Gas Leak & Confined Space Protocol",
+    "hi": "गैस रिसाव और संवृत स्थान प्रोटोकॉल",
+    "sat": "__AWAITING_NATIVE_SPEAKER__"
+  },
+  "setting": "Underground district, settling sump entry",
+  "estimated_minutes": 11,
+  "asset_pack": "packs/gas-01",
+  "asset_budget_mb": 26,
+  "tier_calibration": {
+    "1": 1.0,
+    "2": 1.25,
+    "3": 1.6
+  },
+  "site_thresholds": {
+    "_note": "CONFIGURATION, NOT CONSTANTS. Seed from the Coal Mines Regulations, then override per site from that mine's DGMS-approved standing orders. Ship the override UI; never hard-code these. Verify every value with the domain reviewer before it appears on a slide.",
+    "o2_min_pct": 19.5,
+    "o2_max_pct": 23.5,
+    "ch4_withdraw_pct": 1.25,
+    "co_max_ppm": 50,
+    "_source": "site standing orders; defaults require review"
+  },
+  "gas_field": {
+    "_note": "A 3D scalar field anchored to the room and sampled at the device's actual position. Methane is lighter than air and layers at the roof and in cavities; heavier products pool at the floor of the sump. Walking the phone up into the layer is the single most convincing interaction in the build.",
+    "species": [
+      {
+        "id": "ch4",
+        "buoyancy": "rises",
+        "peak_height_m": 2.3,
+        "peak_pct": 2.8,
+        "falloff_m": 0.8
+      },
+      {
+        "id": "co2",
+        "buoyancy": "sinks",
+        "peak_height_m": -1.4,
+        "peak_pct": 4.0,
+        "falloff_m": 1.1
+      }
+    ]
+  },
+  "hard_fails": [
+    "ENTRY_BEFORE_ATMOSPHERE_TEST",
+    "SOLO_ENTRY",
+    "DUST_MASK_AS_RESPIRATOR",
+    "UNPROTECTED_RESCUE_ENTRY"
+  ],
+  "beats": [
+    {
+      "id": "2.1",
+      "title": "Gas has a shape, and the shape is the lesson",
+      "teaches": "Where a gas accumulates depends on whether it is lighter or heavier than air. Test where it collects, not where it is convenient.",
+      "anchors": {
+        "t1": "room_mesh",
+        "t2": "marker:sump_rail",
+        "t3": "plate:district_01"
+      },
+      "rubric": [
+        {
+          "id": "zone-id",
+          "kind": "choice",
+          "competency": "HAZ-ID",
+          "weight": 3,
+          "params": {
+            "required": [
+              "roof_cavity",
+              "sump_floor"
+            ],
+            "forbidden": [
+              "mid_gallery"
+            ]
+          }
+        },
+        {
+          "id": "sample-heights",
+          "kind": "fraction",
+          "competency": "TECH",
+          "weight": 2,
+          "params": {
+            "target": 0.75,
+            "_of": "prescribed sampling heights actually visited"
+          }
+        }
+      ],
+      "staging": [
+        {
+          "at": 0.0,
+          "cue": "vignette",
+          "for": 0.6,
+          "ease": "quintOut"
+        },
+        {
+          "at": 0.3,
+          "cue": "gas-drift",
+          "for": 3.2,
+          "ease": "linear"
+        },
+        {
+          "at": 0.8,
+          "cue": "detector-wake",
+          "for": 0.4,
+          "ease": "backOut"
+        },
+        {
+          "at": 1.4,
+          "cue": "label:roof-cavity",
+          "for": 0.3,
+          "ease": "quintOut"
+        },
+        {
+          "at": 2.0,
+          "cue": "hand-over"
+        }
+      ]
+    },
+    {
+      "id": "2.2",
+      "title": "Read the detector against the standing orders",
+      "teaches": "The withdrawal decision belongs to the site's approved threshold, not to your judgement.",
+      "anchors": {
+        "t1": "hud",
+        "t2": "hud",
+        "t3": "hud"
+      },
+      "rubric": [
+        {
+          "id": "withdraw-decision",
+          "kind": "choice",
+          "competency": "HAZ-ID",
+          "weight": 3,
+          "params": {
+            "required": [
+              "withdraw"
+            ],
+            "forbidden": [
+              "proceed",
+              "ventilate_and_proceed"
+            ]
+          }
+        },
+        {
+          "id": "retest-after-ventilation",
+          "kind": "flag",
+          "competency": "SEQ",
+          "weight": 2,
+          "params": {
+            "expect": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "2.3",
+      "title": "Kit up from a rack that contains a wrong answer",
+      "teaches": "Selecting the right item is half of it. Inspecting it is the other half.",
+      "anchors": {
+        "t1": "horizontal_plane",
+        "t2": "marker:ppe_rack",
+        "t3": "plate:rack_02"
+      },
+      "rubric": [
+        {
+          "id": "ppe-set",
+          "kind": "choice",
+          "competency": "EQP-SEL",
+          "weight": 3,
+          "params": {
+            "required": [
+              "scsr",
+              "four_gas_detector",
+              "harness_lifeline",
+              "is_cap_lamp"
+            ],
+            "forbidden": [
+              "dust_mask"
+            ]
+          }
+        },
+        {
+          "id": "scsr-seal-check",
+          "kind": "flag",
+          "competency": "EQP-SEL",
+          "weight": 2,
+          "params": {
+            "expect": true
+          }
+        },
+        {
+          "id": "donning-order",
+          "kind": "sequence",
+          "competency": "SEQ",
+          "weight": 1,
+          "params": {
+            "order": [
+              "is_cap_lamp",
+              "four_gas_detector",
+              "scsr",
+              "harness_lifeline"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "2.4",
+      "title": "The permit and the standby person",
+      "teaches": "No entry without a tested atmosphere, running ventilation, a posted standby and an agreed rescue plan.",
+      "anchors": {
+        "t1": "vertical_plane",
+        "t2": "marker:permit_board",
+        "t3": "plate:permit_01"
+      },
+      "rubric": [
+        {
+          "id": "permit-order",
+          "kind": "sequence",
+          "competency": "SEQ",
+          "weight": 3,
+          "params": {
+            "order": [
+              "test_atmosphere",
+              "start_ventilation",
+              "post_standby",
+              "agree_comms",
+              "name_rescue_plan"
+            ]
+          }
+        },
+        {
+          "id": "standby-posted",
+          "kind": "flag",
+          "competency": "EQP-SEL",
+          "weight": 3,
+          "params": {
+            "expect": true
+          }
+        },
+        {
+          "id": "comms-check",
+          "kind": "flag",
+          "competency": "TECH",
+          "weight": 1,
+          "params": {
+            "expect": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "2.5",
+      "title": "The buddy goes down. What you do next decides who dies",
+      "teaches": "Most confined-space fatalities are would-be rescuers. You do not enter. You retrieve from outside.",
+      "anchors": {
+        "t1": "anchor:sump_mouth",
+        "t2": "marker:sump_rail",
+        "t3": "plate:sump_01"
+      },
+      "rubric": [
+        {
+          "id": "rescue-choice",
+          "kind": "choice",
+          "competency": "HAZ-ID",
+          "weight": 3,
+          "params": {
+            "required": [
+              "non_entry_rescue"
+            ],
+            "forbidden": [
+              "enter_to_rescue"
+            ]
+          }
+        },
+        {
+          "id": "alarm-latency",
+          "kind": "latency",
+          "competency": "SEQ",
+          "weight": 2,
+          "params": {
+            "good_ms": 8000,
+            "bad_ms": 25000
+          }
+        },
+        {
+          "id": "retrieval-use",
+          "kind": "fraction",
+          "competency": "TECH",
+          "weight": 2,
+          "params": {
+            "target": 0.8,
+            "_of": "correct use of the lifeline retrieval system"
+          }
+        },
+        {
+          "id": "written-check",
+          "kind": "choice",
+          "competency": "KNW",
+          "weight": 1,
+          "params": {
+            "required": [
+              "q1_a",
+              "q2_c",
+              "q3_b",
+              "q4_b",
+              "q5_a",
+              "q6_a"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "_staging_note": "Staging drives the SAME beat the rubric scores, from the same file. 'hand-over' starts the worker's clock — timing rubrics measure from there, not from beat start, so our reveal pacing never counts as his hesitation. Only one attention-seeking cue may be live at a time; Choreographer warns at load if two overlap."
+}

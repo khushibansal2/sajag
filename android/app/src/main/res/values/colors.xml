@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Window background behind the app: the same pale grey as the screens. -->
+    <color name="bg">#FFF4F6F8</color>
+    <!-- Launcher icon background: the brand navy, so the amber helmet stands out. -->
+    <color name="ic_launcher_bg">#FF0F2A4A</color>
+</resources>

@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push: { branches: [main] }
+  pull_request:
+
+jobs:
+  core:
+    name: Python core (43 tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r core/requirements.txt
+      - run: cd core && python -m unittest discover -s tests -p 'test_*.py' -v
+
+  server:
+    name: Issuer and device authentication (47 tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r server/requirements.txt httpx
+      - run: cd server && python -m unittest discover -s tests -p 'test_*.py' -v
+
+  crosslang:
+    name: Python/JVM codec agreement
+    runs-on: ubuntu-latest
+    # The server mints with Python and the inspector's phone verifies with
+    # Kotlin. If these ever disagree, real certificates fail at a pit mouth.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - uses: actions/setup-java@v5
+        with: { distribution: temurin, java-version: "21" }
+      - run: pip install cryptography
+      - run: make jvm
+
+  web:
+    name: Python/JavaScript codec agreement + dashboard build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: make web
+      - run: make dash
+
+  android:
+    name: Android unit tests + APK budget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - uses: actions/setup-java@v5
+        with: { distribution: temurin, java-version: "17" }
+      - uses: android-actions/setup-android@v3
+      - name: Regenerate codec vectors from the Python source of truth
+        run: |
+          pip install cryptography
+          cd core && python cli.py vectors 20 > ../jvm-vectors/vectors.json
+          cd ../jvm-vectors && python tsv.py
+          cp vectors.tsv ../android/app/src/test/resources/
+      # Git on Windows does not keep the executable bit, so set it here rather
+      # than depend on how the repository was committed.
+      - run: chmod +x android/gradlew
+      - name: Unit tests (no device needed)
+        run: cd android && ./gradlew testWorkerDebugUnitTest
+      - name: Build and check the 40 MB budget
+        run: cd android && ./gradlew assembleWorkerRelease checkApkBudget

@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Sajag AR Drill</title>
+<style>
+  :root { --y:#FFC107; --r:#E53935; --g:#43A047; --ink:#ECEFF1; --panel:rgba(14,18,24,.88); }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; overflow:hidden; background:#000; color:var(--ink);
+    font-family: "Segoe UI", "Noto Sans Devanagari", system-ui, sans-serif; }
+  #cam, #gl { position:fixed; inset:0; width:100%; height:100%; }
+  #cam { object-fit:cover; }
+  #gl { touch-action:none; }
+  .top { position:fixed; top:0; left:0; right:0; display:flex; align-items:center; gap:12px;
+    padding:10px 16px; background:linear-gradient(#000c,#0000); }
+  .brand { font-weight:800; color:var(--y); font-size:20px; }
+  .pill { background:#0009; border:1px solid #fff3; border-radius:99px; padding:5px 12px; font-size:13px; }
+  .pill.live { border-color:var(--r); color:#ffb4b0; }
+  .sp { flex:1; }
+  button { font:inherit; cursor:pointer; border:0; border-radius:14px; padding:12px 16px;
+    background:#263238; color:var(--ink); font-weight:700; font-size:16px; }
+  button.pri { background:var(--y); color:#000; }
+  button.bad { background:var(--r); color:#fff; }
+  button:hover { filter:brightness(1.12); }
+  .card { position:fixed; left:50%; bottom:18px; transform:translateX(-50%); width:min(560px, calc(100% - 32px));
+    background:var(--panel); border:1px solid #ffffff1f; border-radius:22px; padding:16px 18px; backdrop-filter:blur(8px); }
+  .card h2 { margin:0 0 4px; color:var(--y); font-size:20px; }
+  .card p { margin:0 0 12px; line-height:1.45; }
+  .opts { display:grid; gap:8px; }
+  .opts button { text-align:left; display:flex; gap:12px; align-items:center; }
+  .opts .ic { display:inline-flex; }
+  .opts .ic svg { width:28px; height:28px; fill:var(--y); }
+  .ico { width:1.15em; height:1.15em; fill:currentColor; vertical-align:-0.2em; }
+  .meter { height:10px; background:#263238; border-radius:9px; overflow:hidden; margin:6px 0 12px; }
+  .meter i { display:block; height:100%; width:0; background:var(--g); transition:width .15s; }
+  #stop { position:fixed; inset:0; background:#3b0000ee; display:none; flex-direction:column; align-items:center;
+    justify-content:center; text-align:center; padding:24px; gap:14px; }
+  #stop b { font-size:64px; letter-spacing:4px; }
+  #hud { position:fixed; right:16px; top:64px; display:grid; gap:6px; text-align:right; font-size:13px; }
+  #detector { position:fixed; left:16px; top:64px; background:#101010e6; border:2px solid #555; border-radius:14px;
+    padding:10px 14px; font-family:Consolas, monospace; display:none; min-width:190px; }
+  #detector .v { font-size:28px; font-weight:800; }
+  #start { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:radial-gradient(#1b1f26,#05070a); }
+  #start .box { width:min(620px, calc(100% - 32px)); text-align:center; }
+  #start h1 { color:var(--y); font-size:40px; margin:0; }
+  .mods { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:22px; }
+  .mods button { padding:22px 12px; font-size:18px; }
+  .mods .big { display:block; }
+  .mods .big svg { width:46px; height:46px; fill:var(--y); }
+  .lang { margin-top:16px; display:flex; gap:8px; justify-content:center; }
+  .lang button.on { outline:2px solid var(--y); }
+  .res td { padding:3px 8px; } .res td:last-child { text-align:right; font-weight:800; }
+  .hint { color:#90A4AE; font-size:13px; }
+  @media (max-width:520px){ .mods{grid-template-columns:1fr;} #start h1{font-size:30px;} }
+</style>
+</head>
+<body>
+<video id="cam" autoplay playsinline muted></video>
+<canvas id="gl"></canvas>
+
+<div class="top">
+  <span class="brand"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 13H8v-3h2.5V7.5h3V10H16v3h-2.5v2.5h-3V13zM12 2 4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z"/></svg> Sajag AR</span>
+  <span class="pill" id="modeP">—</span>
+  <span class="pill live" id="timerP" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 1h6v2H9zm10.03 6.39 1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42A8.962 8.962 0 0 0 12 4a9 9 0 0 0-9 9c0 4.97 4.02 9 9 9a8.994 8.994 0 0 0 7.03-14.61zM13 14h-2V8h2v6z"/></svg> <span id="timerV">0.0s</span></span>
+  <span class="sp"></span>
+  <button id="speakB" title="Repeat voice" aria-label="Repeat voice"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg></button>
+</div>
+<div id="hud"></div>
+<div id="detector"><div><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.76 16.24C6.67 15.16 6 13.66 6 12s.67-3.16 1.76-4.24l1.42 1.42C8.45 9.9 8 10.9 8 12c0 1.1.45 2.1 1.17 2.83l-1.41 1.41zm8.48 0C17.33 15.16 18 13.66 18 12s-.67-3.16-1.76-4.24l-1.42 1.42C15.55 9.9 16 10.9 16 12c0 1.1-.45 2.1-1.17 2.83l1.41 1.41zM12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm8 2c0 2.21-.9 4.21-2.35 5.65l1.42 1.42C20.88 17.26 22 14.76 22 12s-1.12-5.26-2.93-7.07l-1.42 1.42A7.94 7.94 0 0 1 20 12zM6.35 6.35 4.93 4.93C3.12 6.74 2 9.24 2 12s1.12 5.26 2.93 7.07l1.42-1.42C4.9 16.21 4 14.21 4 12s.9-4.21 2.35-5.65z"/></svg> CH₄</div><div class="v" id="detV">0.00 %</div><div id="detH" class="hint"></div></div>
+<div class="card" id="card" hidden></div>
+<div id="stop"><svg class="ico" style="width:84px;height:84px" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM4 12c0-4.42 3.58-8 8-8 1.85 0 3.55.63 4.9 1.69L5.69 16.9A7.902 7.902 0 0 1 4 12zm8 8c-1.85 0-3.55-.63-4.9-1.69L18.31 7.1A7.902 7.902 0 0 1 20 12c0 4.42-3.58 8-8 8z"/></svg><b id="stopT">STOP</b><div id="stopB" style="font-size:18px;max-width:560px"></div>
+  <button class="bad" id="stopOk">I understand</button></div>
+
+<div id="start"><div class="box">
+  <h1>Sajag · सजग</h1>
+  <p id="sub">AR safety drill: hazards appear in your real surroundings through the camera.</p>
+  <div class="mods">
+    <button data-m="fire"><span class="big"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 12.9-2.13 2.09c-.56.56-.87 1.29-.87 2.07C9 18.68 10.35 20 12 20s3-1.32 3-2.94c0-.78-.31-1.52-.87-2.07L12 12.9z m16 6-.44.55C14.38 8.02 12 7.19 12 5.3V2S4 6 4 13c0 2.92 1.56 5.47 3.89 6.86-.56-.79-.89-1.76-.89-2.8 0-1.32.52-2.56 1.47-3.5L12 10.1l3.53 3.47c.95.93 1.47 2.17 1.47 3.5 0 1.02-.31 1.96-.85 2.75 1.89-1.15 3.29-3.06 3.71-5.3.66-3.55-1.07-6.9-3.86-8.52z"/></svg></span><span id="mFire">Fire &amp; Explosion</span></button>
+    <button data-m="gas"><span class="big"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg></span><span id="mGas">Gas Leak &amp; Confined Space</span></button>
+  </div>
+  <div class="lang"><button data-l="en" class="on">English</button><button data-l="hi">हिन्दी</button></div>
+  <p class="hint" style="margin-top:16px">Drag to look around · click objects in 3D · no camera? a virtual mine gallery is used instead (guided mode)</p>
+</div></div>
+
+<!-- three.js r128 (MIT), bundled next to this page so the demo runs with no internet. -->
+<script src="three.min.js"></script>
+<script>
+// Material Icons path data (Apache 2.0), the same set the Android app draws.
+const ICONS = {
+ "health_and_safety": "M10.5 13H8v-3h2.5V7.5h3V10H16v3h-2.5v2.5h-3V13zM12 2 4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z",
+ "timer": "M9 1h6v2H9zm10.03 6.39 1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42A8.962 8.962 0 0 0 12 4a9 9 0 0 0-9 9c0 4.97 4.02 9 9 9a8.994 8.994 0 0 0 7.03-14.61zM13 14h-2V8h2v6z",
+ "volume_up": "M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z",
+ "sensors": "M7.76 16.24C6.67 15.16 6 13.66 6 12s.67-3.16 1.76-4.24l1.42 1.42C8.45 9.9 8 10.9 8 12c0 1.1.45 2.1 1.17 2.83l-1.41 1.41zm8.48 0C17.33 15.16 18 13.66 18 12s-.67-3.16-1.76-4.24l-1.42 1.42C15.55 9.9 16 10.9 16 12c0 1.1-.45 2.1-1.17 2.83l1.41 1.41zM12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm8 2c0 2.21-.9 4.21-2.35 5.65l1.42 1.42C20.88 17.26 22 14.76 22 12s-1.12-5.26-2.93-7.07l-1.42 1.42A7.94 7.94 0 0 1 20 12zM6.35 6.35 4.93 4.93C3.12 6.74 2 9.24 2 12s1.12 5.26 2.93 7.07l1.42-1.42C4.9 16.21 4 14.21 4 12s.9-4.21 2.35-5.65z",
+ "block": "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM4 12c0-4.42 3.58-8 8-8 1.85 0 3.55.63 4.9 1.69L5.69 16.9A7.902 7.902 0 0 1 4 12zm8 8c-1.85 0-3.55-.63-4.9-1.69L18.31 7.1A7.902 7.902 0 0 1 20 12c0 4.42-3.58 8-8 8z",
+ "local_fire_department": "m12 12.9-2.13 2.09c-.56.56-.87 1.29-.87 2.07C9 18.68 10.35 20 12 20s3-1.32 3-2.94c0-.78-.31-1.52-.87-2.07L12 12.9z m16 6-.44.55C14.38 8.02 12 7.19 12 5.3V2S4 6 4 13c0 2.92 1.56 5.47 3.89 6.86-.56-.79-.89-1.76-.89-2.8 0-1.32.52-2.56 1.47-3.5L12 10.1l3.53 3.47c.95.93 1.47 2.17 1.47 3.5 0 1.02-.31 1.96-.85 2.75 1.89-1.15 3.29-3.06 3.71-5.3.66-3.55-1.07-6.9-3.86-8.52z",
+ "cloud": "M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z",
+ "bolt": "M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34.05-.08.07-.12C8.48 10.94 10.42 7.54 13 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.96 17.55 11 21 11 21z",
+ "forest": "M16 12 9 2 2 12h1.86L0 18h7v4h4v-4h7l-3.86-6z M20.14 12H22L15 2l-2.39 3.41L17.92 13h-1.95l3.22 5H24zM13 19h4v3h-4z",
+ "local_gas_station": "m19.77 7.23.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33a2.5 2.5 0 0 0 2.5 2.5c.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1V14c0-1.1-.9-2-2-2h-1V5c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v16h10v-7.5h1.5v5a2.5 2.5 0 0 0 5 0V9c0-.69-.28-1.32-.73-1.77zM12 10H6V5h6v5zm6 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z",
+ "touch_app": "M9 11.24V7.5a2.5 2.5 0 0 1 5 0v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5S10 6.67 10 7.5v10.74c-3.6-.76-3.54-.75-3.67-.75-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.27.27.65.44 1.06.44h6.79c.75 0 1.33-.55 1.44-1.28l.75-5.27c.01-.07.02-.14.02-.2 0-.62-.38-1.16-.91-1.38z",
+ "arrow_downward": "m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z",
+ "directions_run": "M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9 1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z",
+ "north": "m5 9 1.41 1.41L11 5.83V22h2V5.83l4.59 4.59L19 9l-7-7-7 7z",
+ "south": "m19 15-1.41-1.41L13 18.17V2h-2v16.17l-4.59-4.59L5 15l7 7 7-7z",
+ "construction": "m13.783 15.172 2.121-2.121 5.996 5.996-2.121 2.121zM17.5 10c1.93 0 3.5-1.57 3.5-3.5 0-.58-.16-1.12-.41-1.6l-2.7 2.7-1.49-1.49 2.7-2.7c-.48-.25-1.02-.41-1.6-.41C15.57 3 14 4.57 14 6.5c0 .41.08.8.21 1.16l-1.85 1.85-1.78-1.78.71-.71-1.41-1.41L12 3.49a3 3 0 0 0-4.24 0L4.22 7.03l1.41 1.41H2.81l-.71.71 3.54 3.54.71-.71V9.15l1.41 1.41.71-.71 1.78 1.78-7.41 7.41 2.12 2.12L16.34 9.79c.36.13.75.21 1.16.21z",
+ "air": "M14.5 17c0 1.65-1.35 3-3 3s-3-1.35-3-3h2c0 .55.45 1 1 1s1-.45 1-1-.45-1-1-1H2v-2h9.5c1.65 0 3 1.35 3 3zM19 6.5C19 4.57 17.43 3 15.5 3S12 4.57 12 6.5h2c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5S16.33 8 15.5 8H2v2h13.5c1.93 0 3.5-1.57 3.5-3.5zm-.5 4.5H2v2h16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5v2c1.93 0 3.5-1.57 3.5-3.5S20.43 11 18.5 11z",
+ "link": "M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z",
+ "check_circle": "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z",
+ "replay": "M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z",
+ "arrow_back": "M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z",
+ "check_box": "M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-9 14-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z",
+ "check_box_outline_blank": "M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
+};
+const icon = (name, cls = '') => `<svg ${cls ? `class="${cls}" ` : ''}viewBox="0 0 24 24" aria-hidden="true"><path d="${ICONS[name]}"/></svg>`;
+
+// ------------------------------------------------------------------ i18n
+let LANG = 'en';
+const T = (en, hi) => ({ en, hi });
+const tr = x => x[LANG] || x.en;
+const say = x => { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(tr(x));
+  u.lang = LANG === 'hi' ? 'hi-IN' : 'en-IN'; u.rate = .95; speechSynthesis.speak(u); } catch (e) {} };
+let lastSpoken = null;
+const speak = x => { lastSpoken = x; say(x); };
+document.getElementById('speakB').onclick = () => lastSpoken && say(lastSpoken);
+
+// ------------------------------------------------------------------ three.js scene
+const canvas = document.getElementById('gl');
+const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(62, 1, 0.05, 100);
+const eye = new THREE.Vector3(0, 1.6, 3.6);
+let yaw = 0, pitch = -0.12, crouch = 0;
+function resize() { renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
+addEventListener('resize', resize); resize();
+
+scene.add(new THREE.HemisphereLight(0xbfd4ff, 0x302010, 0.75));
+const sun = new THREE.DirectionalLight(0xffffff, 0.5); sun.position.set(2, 5, 3); scene.add(sun);
+const fireLight = new THREE.PointLight(0xff6a00, 0, 7); scene.add(fireLight);
+
+function tex(draw, w = 256, h = 256) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c); t.needsUpdate = true; return t;
+}
+const glow = tex((g, w, h) => { const r = g.createRadialGradient(w/2, h/2, 0, w/2, h/2, w/2);
+  r.addColorStop(0, '#fff'); r.addColorStop(.35, 'rgba(255,255,255,.55)'); r.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = r; g.fillRect(0, 0, w, h); });
+function label(text, bg = '#FFC107', fg = '#000', scale = .5) {
+  const t = tex((g, w, h) => { g.fillStyle = bg; g.beginPath(); g.roundRect ? g.roundRect(4, 20, w - 8, h - 40, 30) : g.rect(4,20,w-8,h-40); g.fill();
+    g.fillStyle = fg; g.font = 'bold 64px Segoe UI, Noto Sans Devanagari, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(text, w / 2, h / 2); }, 512, 160);
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, depthTest: false }));
+  s.scale.set(scale * 3.2, scale, 1); s.renderOrder = 10; return s;
+}
+
+// Particle system: fire / smoke / spray share one implementation.
+function particles(n, size, blending, colorFn) {
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  const mat = new THREE.PointsMaterial({ size, map: glow, vertexColors: true, transparent: true, depthWrite: false, blending, sizeAttenuation: true });
+  const pts = new THREE.Points(geo, mat);
+  pts.userData = { life: new Float32Array(n).map(() => Math.random()), vel: new Float32Array(n * 3), n, colorFn };
+  return pts;
+}
+
+// Virtual gallery: the guided-mode fallback when there is no camera
+const gallery = new THREE.Group();
+{ const rock = new THREE.MeshStandardMaterial({ color: 0x4a3b30, roughness: 1, side: THREE.BackSide });
+  const tunnel = new THREE.Mesh(new THREE.BoxGeometry(7, 3.4, 16), rock); tunnel.position.set(0, 1.7, -2); gallery.add(tunnel);
+  const beam = new THREE.MeshStandardMaterial({ color: 0x6d5846 });
+  for (let z = 4; z > -10; z -= 2.5) { [-3.3, 3.3].forEach(x => { const p = new THREE.Mesh(new THREE.BoxGeometry(.25, 3.4, .25), beam); p.position.set(x, 1.7, z); gallery.add(p); });
+    const top = new THREE.Mesh(new THREE.BoxGeometry(6.8, .25, .25), beam); top.position.set(0, 3.3, z); gallery.add(top); }
+  const lamp = new THREE.PointLight(0xffe0b0, .6, 12); lamp.position.set(0, 3, 1); gallery.add(lamp); }
+
+// Floor marks
+function ring(r, color) { const m = new THREE.Mesh(new THREE.RingGeometry(r * .92, r, 64), new THREE.MeshBasicMaterial({ color, transparent: true, side: THREE.DoubleSide, depthWrite: false }));
+  m.rotation.x = -Math.PI / 2; m.position.y = .01; return m; }
+
+// ------------------------------------------------------------------ FIRE module objects
+const fireG = new THREE.Group();
+const panel = new THREE.Mesh(new THREE.BoxGeometry(1.1, 1.8, .45), new THREE.MeshStandardMaterial({ color: 0x546e7a, metalness: .5, roughness: .5 }));
+panel.position.set(-.4, .9, -.6); fireG.add(panel);
+const bolt = new THREE.Mesh(new THREE.PlaneGeometry(.7, .5), new THREE.MeshBasicMaterial({ transparent: true,
+  map: tex((g, w, h) => { g.fillStyle = '#FFC107'; g.fillRect(0, 0, w, h); g.fillStyle = '#000'; g.save(); g.translate(w/2 - 66, 22); g.scale(5.5, 5.5); g.fill(new Path2D(ICONS.bolt)); g.restore(); g.textAlign = 'center'; g.font='bold 44px sans-serif'; g.fillText('415 V', w/2, 230); }) }));
+bolt.position.set(-.4, 1.35, -.37); fireG.add(bolt);
+const dangerRing = ring(1.5, 0xe53935); dangerRing.position.set(-.4, .01, -.4); fireG.add(dangerRing);
+const dangerFill = new THREE.Mesh(new THREE.CircleGeometry(1.5, 64), new THREE.MeshBasicMaterial({ color: 0xe53935, transparent: true, opacity: .12, depthWrite: false }));
+dangerFill.rotation.x = -Math.PI / 2; dangerFill.position.set(-.4, .005, -.4); fireG.add(dangerFill);
+const fireBase = new THREE.Vector3(-.4, .35, -.25);
+const fire = particles(260, .42, THREE.AdditiveBlending); fireG.add(fire);
+const smoke = particles(220, 1.6, THREE.NormalBlending); fireG.add(smoke);
+const spray = particles(160, .22, THREE.AdditiveBlending); fireG.add(spray);
+const fireHit = new THREE.Mesh(new THREE.SphereGeometry(.6, 12, 12), new THREE.MeshBasicMaterial({ visible: false }));
+fireHit.position.copy(fireBase); fireG.add(fireHit);
+const dangerLbl = label('DANGER · 1.5 m', '#E53935', '#fff', .28); dangerLbl.position.set(-.4, 2.15, -.6); fireG.add(dangerLbl);
+
+// Extinguisher rack
+const rack = new THREE.Group(); rack.position.set(1.7, 0, .3); rack.rotation.y = -.5; fireG.add(rack);
+const cyls = [];
+[['water', 0x1e88e5, 'WATER', 'पानी'], ['foam', 0xbdbdbd, 'FOAM', 'फोम'], ['co2', 0xd32f2f, 'CO₂', 'CO₂'], ['sand', 0x8d6e63, 'SAND', 'रेत']].forEach(([id, color, en, hi], i) => {
+  const g = new THREE.Group(); g.position.set((i - 1.5) * .42, 0, 0);
+  const body = new THREE.Mesh(new THREE.CylinderGeometry(.14, .14, .8, 24), new THREE.MeshStandardMaterial({ color, metalness: .3, roughness: .35 }));
+  body.position.y = .55; g.add(body);
+  const cap = new THREE.Mesh(new THREE.SphereGeometry(.14, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), body.material); cap.position.y = .95; g.add(cap);
+  const valve = new THREE.Mesh(new THREE.CylinderGeometry(.04, .04, .14), new THREE.MeshStandardMaterial({ color: 0x222222 })); valve.position.y = 1.08; g.add(valve);
+  const l = label(en, '#111', '#fff', .16); l.position.y = 1.32; g.add(l); l.userData.names = { en, hi };
+  body.userData = { id, group: g, label: l }; cap.userData = body.userData;
+  cyls.push(body, cap); rack.add(g);
+});
+const shelf = new THREE.Mesh(new THREE.BoxGeometry(1.9, .06, .45), new THREE.MeshStandardMaterial({ color: 0x6d4c41 })); shelf.position.y = .13; rack.add(shelf);
+
+// Escape path
+const exitG = new THREE.Group(); exitG.visible = false; fireG.add(exitG);
+const chevrons = [];
+for (let i = 0; i < 9; i++) {
+  const s = new THREE.Shape(); s.moveTo(0, 0); s.lineTo(.22, .18); s.lineTo(0, .36); s.lineTo(.08, .36); s.lineTo(.3, .18); s.lineTo(.08, 0);
+  const m = new THREE.Mesh(new THREE.ShapeGeometry(s), new THREE.MeshBasicMaterial({ color: 0x43a047, transparent: true, side: THREE.DoubleSide, depthWrite: false }));
+  m.rotation.x = -Math.PI / 2; m.rotation.z = Math.PI; exitG.add(m); chevrons.push(m);
+}
+const exitSign = label('EXIT', '#43A047', '#fff', .35); exitSign.position.set(-3, 1.4, 1.5); exitG.add(exitSign);
+
+// ------------------------------------------------------------------ GAS module objects
+const gasG = new THREE.Group();
+function gasLayer(y0, y1, color, count) {
+  const g = new THREE.Group();
+  for (let i = 0; i < count; i++) {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(9, 9), new THREE.MeshBasicMaterial({ color, map: glow, transparent: true, opacity: .16, depthWrite: false, side: THREE.DoubleSide }));
+    m.rotation.x = -Math.PI / 2; m.position.y = y0 + (y1 - y0) * i / (count - 1); m.userData.phase = Math.random() * 6; g.add(m);
+  }
+  return g;
+}
+const ch4Layer = gasLayer(2.2, 3.1, 0xffeb3b, 7); gasG.add(ch4Layer);
+const co2Layer = gasLayer(0.02, .45, 0x4fc3f7, 5); gasG.add(co2Layer);
+const ch4Lbl = label('CH₄ rises: lighter than air', '#FFEB3B', '#000', .26); ch4Lbl.position.set(1.2, 2.6, -1); gasG.add(ch4Lbl);
+const co2Lbl = label('CO₂ sinks: heavier than air', '#4FC3F7', '#000', .26); co2Lbl.position.set(-1.2, .55, -1); gasG.add(co2Lbl);
+const sump = new THREE.Mesh(new THREE.CircleGeometry(1, 48), new THREE.MeshBasicMaterial({ color: 0x050505 }));
+sump.rotation.x = -Math.PI / 2; sump.position.set(0, .012, -1.3); gasG.add(sump);
+const sumpRing = ring(1.05, 0xe53935); sumpRing.position.set(0, .015, -1.3); gasG.add(sumpRing);
+const probe = new THREE.Mesh(new THREE.SphereGeometry(.06, 16, 16), new THREE.MeshBasicMaterial({ color: 0x00e676 }));
+gasG.add(probe);
+const probeRing = new THREE.Mesh(new THREE.TorusGeometry(.12, .012, 8, 32), new THREE.MeshBasicMaterial({ color: 0x00e676 })); gasG.add(probeRing);
+
+// ------------------------------------------------------------------ camera feed
+const video = document.getElementById('cam');
+let mode = 'guided';
+async function startCamera() {
+  try {
+    const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+    video.srcObject = s; mode = 'camera'; gallery.visible = false;
+  } catch (e) { mode = 'guided'; scene.add(gallery); gallery.visible = true; video.style.display = 'none'; }
+  document.getElementById('modeP').textContent = mode === 'camera' ? 'Camera mode · hazards drawn over the live camera' : 'Guided mode · virtual 3D gallery';
+}
+
+// ------------------------------------------------------------------ look controls
+let dragging = false, lastX = 0, lastY = 0, pointerDown = false, pointerNDC = new THREE.Vector2();
+canvas.addEventListener('pointerdown', e => { pointerDown = true; dragging = false; lastX = e.clientX; lastY = e.clientY; setNDC(e); onPick(e); });
+addEventListener('pointerup', () => { pointerDown = false; });
+canvas.addEventListener('pointermove', e => {
+  setNDC(e);
+  if (!pointerDown || state.mode === 'spray' || state.mode === 'sample') return;
+  const dx = e.clientX - lastX, dy = e.clientY - lastY; lastX = e.clientX; lastY = e.clientY;
+  if (Math.abs(dx) + Math.abs(dy) > 2) dragging = true;
+  yaw -= dx * .004; pitch = Math.max(-1, Math.min(.8, pitch - dy * .003));
+});
+function setNDC(e) { pointerNDC.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); }
+addEventListener('deviceorientation', e => { if (e.gamma == null || mode !== 'camera') return; yaw = -e.gamma * Math.PI / 180 * .6; pitch = ((e.beta || 90) - 80) * Math.PI / 180 * -.5; });
+const ray = new THREE.Raycaster();
+
+// ------------------------------------------------------------------ drill state
+const card = document.getElementById('card'), hud = document.getElementById('hud');
+const state = { module: null, mode: 'idle', t0: 0, timing: false, fireLevel: 1, smoke: 0, spray: 0, coverage: 0,
+  score: {}, hardFails: [], sampled: new Set(), detY: 1.2 };
+const now = () => performance.now();
+function startTimer() { state.t0 = now(); state.timing = true; document.getElementById('timerP').hidden = false; }
+function stopTimer() { state.timing = false; document.getElementById('timerP').hidden = true; return (now() - state.t0) / 1000; }
+function latencyScore(sec, good, bad) { return sec <= good ? 100 : sec >= bad ? 0 : Math.round(100 * (bad - sec) / (bad - good)); }
+function setScore(k, v, why) { state.score[k] = { v, why }; renderHud(); }
+function renderHud() { hud.innerHTML = Object.entries(state.score).map(([k, s]) => `<span class="pill">${k} <b style="color:${s.v >= 70 ? '#81c784' : '#ef9a9a'}">${s.v}</b></span>`).join(''); }
+
+function show(title, body, buttons = [], extra = '') {
+  card.hidden = false;
+  card.innerHTML = `<h2>${tr(title)}</h2><p>${tr(body)}</p>${extra}<div class="opts"></div>`;
+  const o = card.querySelector('.opts');
+  buttons.forEach(b => { const el = document.createElement('button'); if (b.cls) el.className = b.cls;
+    el.innerHTML = (b.icon ? `<span class="ic">${icon(b.icon)}</span>` : '') + `<span>${tr(b.text)}</span>`; el.onclick = b.onClick; o.appendChild(el); });
+  speak(body);
+}
+function hardFail(msg) {
+  state.hardFails.push(tr(msg));
+  const st = document.getElementById('stop'); st.style.display = 'flex';
+  document.getElementById('stopT').textContent = LANG === 'hi' ? 'रुकिए' : 'STOP';
+  document.getElementById('stopB').textContent = tr(msg);
+  document.getElementById('stopOk').textContent = LANG === 'hi' ? 'मैं समझ गया — दोबारा करें' : 'I understand — try again';
+  say(msg);
+  return new Promise(res => document.getElementById('stopOk').onclick = () => { st.style.display = 'none'; res(); });
+}
+
+// ---------------------------------------------------------------- FIRE flow
+function fireFlow() {
+  scene.add(fireG); state.fireLevel = 1; state.smoke = 0; exitG.visible = false; rack.visible = false;
+  state.mode = 'classify'; startTimer();
+  show(T('Step 1 · Read the fire', 'चरण 1 · आग को पहचानें'),
+    T('A fire has started at the conveyor switchgear panel in front of you. What kind of fire is it?', 'आपके सामने कन्वेयर स्विचगियर पैनल में आग लगी है। यह किस तरह की आग है?'),
+    [{ icon: 'bolt', text: T('Electrical fire — live panel', 'बिजली की आग — चालू पैनल'), onClick: () => classify(true) },
+     { icon: 'forest', text: T('Ordinary fire — wood, paper', 'साधारण आग — लकड़ी, कागज़'), onClick: () => classify(false) },
+     { icon: 'local_gas_station', text: T('Oil or fuel fire', 'तेल या ईंधन की आग'), onClick: () => classify(false) }]);
+}
+function classify(ok) {
+  const s = stopTimer(); setScore('HAZ-ID', ok ? Math.round((100 + latencyScore(s, 6, 20)) / 2) : 0, `${s.toFixed(1)} s`);
+  rack.visible = true; state.mode = 'pick'; startTimer();
+  show(T('Step 2 · Pick the right extinguisher', 'चरण 2 · सही अग्निशामक चुनें'),
+    T('Look at the rack to your right. Tap the cylinder you would use on this fire.', 'दाईं ओर रैक देखें। इस आग पर जिस सिलेंडर का उपयोग करेंगे, उसे छुएँ।'), [],
+    `<p class="hint">${icon('touch_app', 'ico')} ${tr(T('Click a cylinder in the 3D scene', '3D दृश्य में सिलेंडर पर क्लिक करें'))}</p>`);
+}
+async function picked(id) {
+  if (state.mode !== 'pick') return;
+  const s = stopTimer();
+  if (id === 'water' || id === 'foam') {
+    setScore('EQP-SEL', 0, id);
+    await hardFail(T('Water and foam conduct electricity. On a live panel they can electrocute you and spread the fire. Use CO₂.', 'पानी और फोम बिजली का प्रवाह करते हैं। चालू पैनल पर ये करंट दे सकते हैं और आग फैला सकते हैं। CO₂ का उपयोग करें।'));
+    state.mode = 'pick'; startTimer(); return;
+  }
+  if (id === 'sand') { setScore('EQP-SEL', 40, 'sand'); speak(T('Sand will not reach inside the panel. Pick again.', 'रेत पैनल के अंदर नहीं पहुँचेगी। फिर से चुनें।')); startTimer(); return; }
+  setScore('EQP-SEL', 100, `${s.toFixed(1)} s`);
+  state.chosen = cyls.find(c => c.userData.id === 'co2').userData.group;
+  state.mode = 'spray'; state.coverage = 0;
+  show(T('Step 3 · Aim at the base, sweep', 'चरण 3 · जड़ पर निशाना, घुमाएँ'),
+    T('Press and hold on the BASE of the fire and sweep side to side. Not at the flames — at the base.', 'आग की जड़ पर दबाकर रखें और दाएँ-बाएँ घुमाएँ। लपटों पर नहीं — जड़ पर।'), [],
+    `<div class="meter"><i id="cov"></i></div>`);
+  startTimer();
+}
+function sprayDone() {
+  const s = stopTimer(); state.mode = 'smoke'; setScore('TECH', Math.round(60 + 40 * Math.min(1, state.aimGood / Math.max(1, state.aimTotal))), `${s.toFixed(1)} s`);
+  state.fireLevel = .12;
+  show(T('Step 4 · Smoke is filling the gallery', 'चरण 4 · गैलरी में धुआँ भर रहा है'),
+    T('Visibility is dropping fast. What do you do first?', 'दृश्यता तेज़ी से घट रही है। आप पहले क्या करेंगे?'),
+    [{ icon: 'arrow_downward', text: T('Get low, below the smoke', 'धुएँ के नीचे झुक जाएँ'), onClick: () => { crouchTarget = 1; setScore('EGR', 100, 'low'); egress(); } },
+     { icon: 'directions_run', text: T('Stand up and run', 'खड़े होकर दौड़ें'), onClick: async () => { setScore('EGR', 0, 'upright');
+        await hardFail(T('Hot smoke and toxic gas collect at head height. Standing up in smoke is how people collapse before the exit.', 'गर्म धुआँ और ज़हरीली गैस सिर की ऊँचाई पर जमा होते हैं। धुएँ में खड़े होना बेहोशी का कारण बनता है।')); } }]);
+}
+let crouchTarget = 0;
+function egress() {
+  exitG.visible = true; state.mode = 'egress'; startTimer();
+  show(T('Step 5 · Follow the green path', 'चरण 5 · हरे रास्ते का पालन करें'),
+    T('Keep one hand on the wall and follow the green arrows to the exit — away from the fire, never past it.', 'एक हाथ दीवार पर रखें और हरे तीरों के साथ निकास तक जाएँ — आग से दूर, उसके पास से कभी नहीं।'),
+    [{ icon: 'north', text: T('Follow the arrows to the north exit', 'तीरों के साथ उत्तर निकास तक जाएँ'), onClick: finishFire },
+     { icon: 'south', text: T('Take the short way past the fire', 'आग के पास से छोटा रास्ता लें'), onClick: () => hardFail(T('Never escape past the seat of the fire. It can flare up and cut you off.', 'आग के स्रोत के पास से कभी न निकलें। वह भड़ककर रास्ता रोक सकती है।')) }]);
+}
+function finishFire() { stopTimer(); results(T('Fire & Explosion Response', 'आग और विस्फोट प्रतिक्रिया')); }
+
+// ---------------------------------------------------------------- GAS flow
+function gasFlow() {
+  scene.add(gasG); document.getElementById('detector').style.display = 'block';
+  state.mode = 'sample'; state.sampled = new Set(); startTimer();
+  show(T('Step 1 · Gas has a shape', 'चरण 1 · गैस का आकार होता है'),
+    T('Methane rises to the roof. Carbon dioxide sinks into the sump. Press and drag up and down to move the detector, and sample the roof AND the floor.', 'मीथेन छत तक उठती है। कार्बन डाइऑक्साइड गड्ढे में बैठती है। डिटेक्टर को ऊपर-नीचे खींचें और छत तथा फ़र्श दोनों पर जाँच करें।'), [],
+    `<p class="hint" id="sampHint">${icon('check_box_outline_blank', 'ico')} roof · ${icon('check_box_outline_blank', 'ico')} floor</p>`);
+}
+function ch4At(y) { return Math.max(0, 2.8 * Math.exp(-Math.pow((y - 2.8) / .55, 2))); }
+function co2At(y) { return Math.max(0, 4.0 * Math.exp(-Math.pow((y - 0) / .4, 2))); }
+function samplesDone() {
+  const s = stopTimer(); setScore('HAZ-ID', Math.round((100 + latencyScore(s, 15, 60)) / 2), `${s.toFixed(0)} s`);
+  state.mode = 'decide';
+  show(T('Step 2 · Read the detector', 'चरण 2 · डिटेक्टर पढ़ें'),
+    T('Methane peaked at 2.8 percent near the roof. The site withdrawal limit is 1.25 percent. What do you do?', 'छत के पास मीथेन 2.8 प्रतिशत तक पहुँची। साइट की निकासी सीमा 1.25 प्रतिशत है। आप क्या करेंगे?'),
+    [{ icon: 'directions_run', text: T('Withdraw everyone and report', 'सबको बाहर निकालें और रिपोर्ट करें'), onClick: () => { setScore('SEQ', 100, 'withdraw'); rescue(); } },
+     { icon: 'construction', text: T('Carry on carefully', 'सावधानी से काम जारी रखें'), onClick: () => hardFail(T('Above the withdrawal limit, any spark can ignite methane. The decision belongs to the limit, not your judgement.', 'निकासी सीमा से ऊपर कोई भी चिंगारी मीथेन जला सकती है। फ़ैसला सीमा से होगा, आपके अंदाज़े से नहीं।')) },
+     { icon: 'air', text: T('Switch on a fan and keep working', 'पंखा चालू कर काम करते रहें'), onClick: () => hardFail(T('A fan can be the spark. Withdraw first, ventilate from outside, then re-test.', 'पंखा ही चिंगारी बन सकता है। पहले बाहर निकलें, बाहर से वेंटिलेट करें, फिर दोबारा जाँचें।')) }]);
+}
+function rescue() {
+  startTimer(); state.mode = 'rescue'; sumpRing.material.color.set(0xe53935);
+  show(T('Step 3 · Your buddy collapses in the sump', 'चरण 3 · आपका साथी गड्ढे में गिर गया'),
+    T('Your buddy went down inside the sump in front of you. CO₂ is pooling there. What do you do?', 'आपका साथी सामने गड्ढे के अंदर गिर गया। वहाँ CO₂ जमा है। आप क्या करेंगे?'),
+    [{ icon: 'link', text: T('Raise the alarm, pull them out with the lifeline from outside', 'अलार्म बजाएँ, बाहर से लाइफ़लाइन से खींचें'), onClick: () => { const s = stopTimer(); setScore('TECH', latencyScore(s, 8, 25), `${s.toFixed(1)} s`); setScore('EGR', 100, 'no entry'); results(T('Gas Leak & Confined Space', 'गैस रिसाव और संवृत स्थान')); } },
+     { icon: 'directions_run', text: T('Climb in to help straight away', 'तुरंत अंदर जाकर मदद करें'), onClick: () => hardFail(T('Most confined-space deaths are would-be rescuers. The gas that dropped your buddy will drop you too.', 'संवृत स्थान में ज़्यादातर मौतें बचाने वालों की होती हैं। जिस गैस ने साथी को गिराया, वही आपको भी गिराएगी।')) }]);
+}
+
+// ---------------------------------------------------------------- results
+function results(title) {
+  state.mode = 'done'; document.getElementById('detector').style.display = 'none';
+  const rows = Object.entries(state.score);
+  const agg = Math.round(rows.reduce((a, [, s]) => a + s.v, 0) / Math.max(1, rows.length));
+  const passed = state.hardFails.length === 0 && rows.every(([, s]) => s.v >= 60);
+  card.hidden = false;
+  card.innerHTML = `<h2>${icon(passed ? 'check_circle' : 'replay', 'ico')} ${tr(title)}</h2>
+    <p style="font-size:34px;font-weight:900;margin:4px 0">${agg}/100 · ${passed ? tr(T('PASSED', 'उत्तीर्ण')) : tr(T('REPEAT', 'दोहराएँ'))}</p>
+    <table class="res">${rows.map(([k, s]) => `<tr><td>${k}</td><td class="hint">${s.why}</td><td style="color:${s.v >= 60 ? '#81c784' : '#ef9a9a'}">${s.v}</td></tr>`).join('')}</table>
+    ${state.hardFails.length ? `<p class="hint">${icon('block', 'ico')} ${state.hardFails.length} ${tr(T('fatal action(s) stopped and retaught', 'घातक कदम रोके और दोबारा सिखाए गए'))}</p>` : ''}
+    <p class="hint">${passed ? tr(T('In the app, this issues a signed offline QR certificate.', 'ऐप में इससे हस्ताक्षरित ऑफ़लाइन QR प्रमाणपत्र जारी होता है।')) : ''}</p>
+    <div class="opts"><button class="pri" onclick="location.reload()">${icon('arrow_back', 'ico')} ${tr(T('Back to modules', 'मॉड्यूल पर वापस'))}</button></div>`;
+  speak(passed ? T('Well done. You passed.', 'शाबाश। आप उत्तीर्ण हुए।') : T('Not yet. Practise the steps that were stopped.', 'अभी नहीं। रोके गए चरणों का अभ्यास करें।'));
+}
+
+// ---------------------------------------------------------------- picking
+function onPick() {
+  ray.setFromCamera(pointerNDC, camera);
+  if (state.mode === 'pick') {
+    const hit = ray.intersectObjects(cyls)[0];
+    if (hit) picked(hit.object.userData.id);
+  }
+}
+
+// ---------------------------------------------------------------- frame loop
+state.aimGood = 0; state.aimTotal = 0;
+const clock = new THREE.Clock();
+function stepParticles(p, dt, spawn, update) {
+  const { life, vel, n } = p.userData, pos = p.geometry.attributes.position.array, col = p.geometry.attributes.color.array;
+  for (let i = 0; i < n; i++) {
+    life[i] += dt * (0.6 + (i % 7) * .08);
+    if (life[i] >= 1) { life[i] = 0; spawn(i, pos, vel); }
+    update(i, life[i], pos, vel, col, dt);
+  }
+  p.geometry.attributes.position.needsUpdate = true; p.geometry.attributes.color.needsUpdate = true;
+}
+function tick() {
+  const dt = Math.min(.05, clock.getDelta()), t = clock.elapsedTime;
+  crouch += (crouchTarget - crouch) * .06;
+  camera.position.set(eye.x, eye.y - crouch * .9, eye.z);
+  camera.rotation.set(pitch, yaw, 0, 'YXZ');
+  if (state.timing) document.getElementById('timerV').textContent = `${((now() - state.t0) / 1000).toFixed(1)}s`;
+
+  if (fireG.parent) {
+    const L = state.fireLevel;
+    fireLight.position.copy(fireBase).add(new THREE.Vector3(0, .6, .3));
+    fireLight.intensity = (2.2 + Math.sin(t * 23) * .4 + Math.sin(t * 7) * .3) * L;
+    dangerRing.material.opacity = .5 + .5 * Math.sin(t * 5);
+    stepParticles(fire, dt * 1.6, (i, pos, vel) => {
+      pos[i*3] = fireBase.x + (Math.random() - .5) * .7 * Math.max(.3, L); pos[i*3+1] = fireBase.y - .1; pos[i*3+2] = fireBase.z + (Math.random() - .5) * .35;
+      vel[i*3] = (Math.random() - .5) * .2; vel[i*3+1] = (.9 + Math.random() * .9) * L; vel[i*3+2] = 0;
+    }, (i, l, pos, vel, col, d) => {
+      pos[i*3] += vel[i*3] * d; pos[i*3+1] += vel[i*3+1] * d; pos[i*3] += (fireBase.x - pos[i*3]) * d * 1.5;
+      const k = 1 - l; col[i*3] = k * L; col[i*3+1] = k * k * .75 * L; col[i*3+2] = k * k * k * .25 * L;
+    });
+    const smokeOn = state.mode === 'smoke' || state.mode === 'egress' || state.mode === 'done';
+    state.smoke += ((smokeOn ? 1 : .15) - state.smoke) * .01;
+    stepParticles(smoke, dt * .35, (i, pos, vel) => {
+      pos[i*3] = fireBase.x + (Math.random() - .5) * .6; pos[i*3+1] = fireBase.y + .8; pos[i*3+2] = fireBase.z;
+      vel[i*3] = (Math.random() - .5) * 1.4; vel[i*3+1] = .8 + Math.random() * .6; vel[i*3+2] = .4 + Math.random() * 1.6;
+    }, (i, l, pos, vel, col, d) => {
+      pos[i*3] += vel[i*3] * d; pos[i*3+1] = Math.min(3.2 - Math.random() * .6 * (1 - state.smoke), pos[i*3+1] + vel[i*3+1] * d); pos[i*3+2] += vel[i*3+2] * d;
+      const a = Math.sin(l * Math.PI) * .35 * state.smoke; col[i*3] = col[i*3+1] = col[i*3+2] = a;
+    });
+    smoke.material.blending = THREE.NormalBlending; smoke.material.opacity = .9;
+
+    // Spray: from the chosen cylinder toward where the pointer hits the fire zone.
+    let spraying = false;
+    if (state.mode === 'spray' && pointerDown) {
+      ray.setFromCamera(pointerNDC, camera);
+      const hit = ray.intersectObject(fireHit)[0];
+      state.aimTotal++;
+      if (hit) {
+        spraying = true; state.sprayTarget = hit.point;
+        const nearBase = hit.point.y < fireBase.y + .25; if (nearBase) state.aimGood++;
+        state.coverage += dt * (nearBase ? .35 : .08);
+        state.fireLevel = Math.max(.15, 1 - state.coverage * .85);
+        const m = document.getElementById('cov'); if (m) m.style.width = Math.min(100, state.coverage * 100) + '%';
+        if (state.coverage >= 1) sprayDone();
+      }
+    }
+    const nozzle = new THREE.Vector3(); (state.chosen || rack).getWorldPosition(nozzle); nozzle.y += 1.05;
+    stepParticles(spray, dt * 2.4, (i, pos, vel) => {
+      pos[i*3] = nozzle.x; pos[i*3+1] = nozzle.y; pos[i*3+2] = nozzle.z;
+      const tgt = state.sprayTarget || fireBase, dir = tgt.clone().sub(nozzle);
+      vel[i*3] = dir.x * (1 + Math.random() * .3) + (Math.random() - .5) * .3; vel[i*3+1] = dir.y + (Math.random() - .5) * .3; vel[i*3+2] = dir.z + (Math.random() - .5) * .3;
+    }, (i, l, pos, vel, col, d) => {
+      pos[i*3] += vel[i*3] * d * 1.1; pos[i*3+1] += vel[i*3+1] * d * 1.1; pos[i*3+2] += vel[i*3+2] * d * 1.1;
+      const a = spraying ? (1 - l) * .9 : 0; col[i*3] = a; col[i*3+1] = a; col[i*3+2] = a;
+    });
+
+    chevrons.forEach((c, i) => { const f = ((i / chevrons.length + t * .25) % 1); c.position.set(1.2 - f * 4.4, .02, 1.5 - f * .2); c.material.opacity = Math.sin(f * Math.PI); });
+    exitSign.material.opacity = .6 + .4 * Math.sin(t * 6);
+    rack.children.forEach(g => { if (g.children[3]) g.children[3].visible = rack.visible; });
+  }
+
+  if (gasG.parent) {
+    [ch4Layer, co2Layer].forEach(layer => layer.children.forEach((m, i) => { m.position.x = Math.sin(t * .4 + m.userData.phase) * .6; m.material.opacity = .1 + .08 * Math.sin(t * .8 + i); }));
+    if (state.mode === 'sample' && pointerDown) state.detY = Math.max(.05, Math.min(3.1, 1.6 + pointerNDC.y * 1.7));
+    const p = new THREE.Vector3(0, state.detY, 1.2);
+    probe.position.copy(p); probeRing.position.copy(p); probeRing.rotation.x = t * 2;
+    const ch4 = ch4At(state.detY), co2 = co2At(state.detY);
+    const alarm = ch4 > 1.25;
+    document.getElementById('detV').textContent = `${ch4.toFixed(2)} %`;
+    document.getElementById('detV').style.color = alarm ? (Math.sin(t * 12) > 0 ? '#ff5252' : '#fff') : '#69f0ae';
+    document.getElementById('detH').textContent = `height ${state.detY.toFixed(2)} m · CO₂ ${co2.toFixed(2)} %${alarm ? ' · ALARM, limit 1.25 %' : ''}`;
+    probe.material.color.set(alarm ? 0xff1744 : co2 > 1 ? 0x40c4ff : 0x00e676);
+    if (state.mode === 'sample') {
+      if (state.detY > 2.6) state.sampled.add('roof');
+      if (state.detY < .35) state.sampled.add('floor');
+      const h = document.getElementById('sampHint');
+      if (h) h.innerHTML = `${icon(state.sampled.has('roof') ? 'check_box' : 'check_box_outline_blank', 'ico')} roof · ${icon(state.sampled.has('floor') ? 'check_box' : 'check_box_outline_blank', 'ico')} floor`;
+      if (state.sampled.size === 2) samplesDone();
+    }
+    sumpRing.material.opacity = .5 + .5 * Math.sin(t * 5);
+    sumpRing.material.transparent = true;
+  }
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(tick);
+}
+
+// ---------------------------------------------------------------- start
+document.querySelectorAll('[data-l]').forEach(b => b.onclick = () => {
+  LANG = b.dataset.l; document.querySelectorAll('[data-l]').forEach(x => x.classList.toggle('on', x === b));
+  document.getElementById('sub').textContent = tr(T('AR safety drill — hazards appear in your real surroundings through the camera.', 'AR सुरक्षा अभ्यास — खतरे कैमरे के ज़रिए आपके असली परिवेश में दिखते हैं।'));
+  document.getElementById('mFire').textContent = tr(T('Fire & Explosion', 'आग और विस्फोट'));
+  document.getElementById('mGas').textContent = tr(T('Gas Leak & Confined Space', 'गैस रिसाव और संवृत स्थान'));
+});
+document.querySelectorAll('[data-m]').forEach(b => b.onclick = async () => {
+  document.getElementById('start').style.display = 'none';
+  await startCamera();
+  if (b.dataset.m === 'fire') fireFlow(); else gasFlow();
+});
+tick();
+</script>
+</body>
+</html>
