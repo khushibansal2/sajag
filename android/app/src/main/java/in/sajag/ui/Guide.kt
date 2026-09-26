@@ -7,6 +7,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import `in`.sajag.i18n.Lang
+import `in`.sajag.i18n.T
 import java.util.Locale
 
 /**
@@ -14,8 +15,9 @@ import java.util.Locale
  * with a cap lamp on is listening, not reading, and many recruits read
  * neither English nor Hindi comfortably.
  *
- * Uses the phone's offline TTS voices. Santali speaks Hindi until recorded
- * native-speaker audio replaces this (see i18n/T.kt for why not MT).
+ * Uses the phone's offline TTS voices. Santali uses a Santali voice if the
+ * phone has one; almost none do, so it otherwise speaks the HINDI line (a Hindi
+ * voice cannot read Ol Chiki) while the screen shows Santali.
  */
 class Guide(context: Context) : TextToSpeech.OnInitListener {
     private val tts = TextToSpeech(context.applicationContext, this)
@@ -33,16 +35,35 @@ class Guide(context: Context) : TextToSpeech.OnInitListener {
             pending = text to lang
             return
         }
-        val locale = if (lang == Lang.EN) Locale("en", "IN") else Locale("hi", "IN")
+        val locale = when (lang) {
+            Lang.EN -> Locale("en", "IN")
+            Lang.HI -> Locale("hi", "IN")
+            Lang.SAT -> SANTALI
+        }
         if (tts.isLanguageAvailable(locale) >= TextToSpeech.LANG_AVAILABLE) tts.language = locale
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "sajag-guide")
     }
+
+    /** Speaks [text] in [lang], or in Hindi when Santali has no voice on this phone. */
+    fun say(text: T, lang: Lang) = say(listOf(text), lang)
+
+    fun say(lines: List<T>, lang: Lang) {
+        val voice = if (lang == Lang.SAT && !hasSantaliVoice()) Lang.HI else lang
+        say(lines.joinToString(" ") { it.of(voice) }, voice)
+    }
+
+    private fun hasSantaliVoice(): Boolean =
+        ready && tts.isLanguageAvailable(SANTALI) >= TextToSpeech.LANG_AVAILABLE
 
     fun stop() {
         if (ready) tts.stop()
     }
 
     fun shutdown() = tts.shutdown()
+
+    private companion object {
+        val SANTALI: Locale = Locale("sat", "IN")
+    }
 }
 
 @Composable

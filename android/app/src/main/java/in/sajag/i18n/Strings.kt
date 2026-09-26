@@ -1,10 +1,10 @@
 package `in`.sajag.i18n
 
 /**
- * App chrome in English and Hindi. Module content lives in assess/ModuleContent.kt.
+ * App chrome in English and Hindi; Santali comes from SantaliText.kt. Module content lives in assess/ModuleContent.kt.
  *
  * TODO(native speaker): every Hindi line needs a pass by a native speaker from
- * the mining belt before a pilot; Santali falls back to Hindi (see T.kt).
+ * the mining belt before a pilot, and every Santali line by a native Santali speaker.
  */
 object S {
     // ------------------------------------------------------------ general
@@ -12,8 +12,9 @@ object S {
     val language = T("Language", "भाषा")
     val chooseLanguage = T("Choose your language", "अपनी भाषा चुनें")
     val santaliNotice = T(
-        "Santali lines are being recorded by a native speaker. Until then, instructions are shown and spoken in Hindi.",
-        "संथाली पंक्तियाँ एक मूल वक्ता द्वारा रिकॉर्ड की जा रही हैं। तब तक निर्देश हिन्दी में दिखाए और बोले जाएंगे।",
+        "Instructions are shown in Santali. If your phone has no Santali voice, they are spoken in Hindi.",
+        "निर्देश संथाली में दिखाए जाते हैं। अगर आपके फ़ोन में संथाली आवाज़ नहीं है, तो वे हिन्दी में बोले जाएंगे।",
+        "ᱦᱩᱠᱩᱢ ᱠᱚ ᱥᱟᱱᱛᱟᱲᱤ ᱛᱮ ᱧᱮᱞᱚᱜᱼᱟ᱾ ᱟᱢᱟᱜ ᱯᱷᱚᱱ ᱨᱮ ᱥᱟᱱᱛᱟᱲᱤ ᱟᱲᱟᱝ ᱵᱟᱱᱩᱜ ᱠᱷᱟᱱ, ᱦᱤᱱᱫᱤ ᱛᱮ ᱨᱚᱲᱚᱜᱼᱟ᱾",
     )
     val back = T("Back", "वापस")
     val next = T("Next", "आगे")

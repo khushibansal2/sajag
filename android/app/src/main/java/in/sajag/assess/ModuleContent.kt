@@ -138,12 +138,14 @@ object Modules {
                     is SequenceTask -> task.latencyItem
                     else -> null
                 }
-                if (latency == itemId) return T("Speed: ${task.prompt.en}", "गति: ${task.prompt.hi}")
+                if (latency == itemId) return speed(task.prompt)
             }
-            if (beat.beatLatencyItem == itemId) return T("Speed: ${beat.title.en}", "गति: ${beat.title.hi}")
+            if (beat.beatLatencyItem == itemId) return speed(beat.title)
         }
         return T(itemId, itemId)
     }
+
+    private fun speed(of: T) = T("Speed: ${of.en}", "गति: ${of.hi}", of.santali?.let { "ᱞᱚᱜᱚᱱ: $it" })
 
     /** Words for a STOP event: an action that would kill in a real mine. */
     fun stopLabel(type: String): T = STOP_LABELS[type] ?: T(type, type)

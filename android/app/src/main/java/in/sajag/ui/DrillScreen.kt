@@ -217,14 +217,14 @@ fun DrillScreen(
     LaunchedEffect(beatIndex, phase, lang) {
         if (phase == Phase.LEARN) {
             sheetOpen = true
-            guide.say(beat.teach.of(lang), lang)
+            guide.say(beat.teach, lang)
         }
     }
     LaunchedEffect(beatIndex, taskIndex, phase) {
         if (phase == Phase.PERFORM) {
             sheetOpen = true
             taskStart = SystemClock.elapsedRealtime()
-            guide.say(beat.tasks[taskIndex].prompt.of(lang), lang)
+            guide.say(beat.tasks[taskIndex].prompt, lang)
         }
     }
 
@@ -293,7 +293,7 @@ fun DrillScreen(
         record(null, type)
         hardFailPending = true
         Alarm.fatal(context)
-        guide.say(S.stopBody.of(lang), lang)
+        guide.say(S.stopBody, lang)
     }
 
     fun elapsedTask() = SystemClock.elapsedRealtime() - taskStart
@@ -330,7 +330,7 @@ fun DrillScreen(
                 onClose = { confirmLeave = true },
                 onListen = {
                     val text = if (phase == Phase.LEARN) beat.teach else beat.tasks[taskIndex].prompt
-                    guide.say(text.of(lang), lang)
+                    guide.say(text, lang)
                 },
             )
             LinearProgressIndicator(

@@ -87,7 +87,7 @@ certificate that an inspector can check with no network.
 | World-anchored AR | Built, needs a phone test | SceneView 2.2.1 and ARCore: tap a surface, hazards stay anchored; falls back to camera mode if ARCore is missing or fails |
 | Passport, hazard report, verifier | Working | Real data from the phone; reports sync to `/v1/hazards` |
 | Emergency, training centre, risk map | Working | From the phone's own data; sample data only in demo mode, labelled |
-| Localisation | English and Hindi | Santali falls back to Hindi until a native speaker records the lines (see `i18n/T.kt`) |
+| Localisation | English, Hindi and Santali (Ol Chiki) | Every screen, drill and district name in Santali (`i18n/SantaliText.kt`, enforced by `SantaliCoverageTest`); voice uses a Santali TTS voice if the phone has one, otherwise Hindi |
 | Unity content (C#) | Written, not compiled | Richer 3D content for later; AR mode does not need it |
 | Browser AR demo | Working offline | `web/ar-demo/index.html`, three.js bundled locally |
 
@@ -267,8 +267,9 @@ certificates. The sync bundle has its own golden test on both sides
   Android Keystore before a pilot.
 - The issuer keeps everything in memory; it needs a database before a pilot.
 - The demo issuer runs over plain HTTP on the site LAN; a pilot needs TLS.
-- Santali lines are waiting for a native speaker. Machine translation into
-  Santali scores 4.7 to 7.3 BLEU, which is unsafe for a safety instruction.
+- The Santali text is an AI-drafted first pass. Every line, safety
+  instructions first, must be reviewed by a native Santali speaker before a
+  pilot. Recorded Santali audio should replace the Hindi voice fallback.
 - Gas thresholds in `gas-01.json` are configuration, not constants, and are to
   be confirmed with a mining-safety reviewer. All drill content has the same
   review pending (see `ModuleContent.kt`).

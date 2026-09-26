@@ -1,17 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Santali (Ol Chiki). DELIBERATELY EMPTY.
-
-  Published English->Santali machine translation scores 4.7-7.3 BLEU. That is
-  fine for gisting and unacceptable for an instruction whose misreading kills
-  someone. These strings get written and recorded by a native speaker in
-  October. Do not fill them with an MT output to make the file look finished.
-
-  Android falls back to the default locale for anything missing here, so a
-  partial Santali build is safe — it shows English rather than nonsense.
-
-  Also: bundle Noto Sans Ol Chiki v2 in assets/fonts/. Android does ship the
-  face, but frozen at v1.03 from 2013.
+  Santali (Ol Chiki). The app's text is NOT here: every screen reads it from
+  i18n/SantaliText.kt through T.of(Lang.SAT). Only the launcher name would live
+  here, and "Sajag" stays the same in every language.
 -->
 <resources>
 </resources>

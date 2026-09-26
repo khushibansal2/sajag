@@ -134,7 +134,7 @@ fun EmergencyScreen(app: AppState, onBack: () -> Unit, onReport: (String) -> Uni
             }
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 SecondaryButton(t(S.readAloud), icon = Ic.VolumeUp, modifier = Modifier.weight(1f)) {
-                    guide.say(emergency.steps.joinToString(" ") { it.of(lang) }, lang)
+                    guide.say(emergency.steps, lang)
                 }
                 SecondaryButton(t(S.stopReading), icon = Ic.Stop, modifier = Modifier.weight(1f)) { guide.stop() }
             }
